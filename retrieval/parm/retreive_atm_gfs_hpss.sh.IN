@@ -1,0 +1,168 @@
+##!/bin/bash
+source ../input_vars.sh
+source ../loadmodules.sh
+  module purge
+  module use $hpcstackpath
+  module load $hpcstackversion
+  module load $modcomp
+  module load $modnetcdf
+  module load $modcdo
+  module load $modnco
+  module load $modwgrib2 
+  module load $modhpss
+  
+  module list
+
+#cd $FORCING_PATH
+
+STARTDATE="FRC_BEG"
+ENDDATE="FRC_END"
+start=$(date -d $STARTDATE +%s)
+end=$(date -d $ENDDATE +%s)
+FORCING_MODEL='FORCING_T'
+FORCING_NC='NETCDF_SWITCH'
+#-----------------------------------------------------------------------------------#
+#                                         ATM (hourly)                              #
+#-----------------------------------------------------------------------------------#
+  echo ' '                                                                 
+  echo '       *****************************************************************'     
+  echo "      ***                      GFS Forcing Prep                        ***"
+  echo '       *****************************************************************'    
+  echo ' ' 
+
+d="$start"
+echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+#-----------------------------------------------------------------------------------#
+# retreive from gfs atmos
+if [ $FORCING_MODEL = 'GFS' ]
+then
+   echo "retreiving from gfs/atmos"
+#-----------------------------------------------------------------------------------#
+   while [[ $d -le $end ]]
+   do
+      date -d @$d '+%Y-%m-%d %2H'
+      YY=$(date -d @$d '+%Y')
+      MM=$(date -d @$d '+%m')
+      DD=$(date -d @$d '+%d')
+      HH=$(date -d @$d '+%2H')
+#-----------------------------------------------------------------------------------#
+      FILEATM=(FILEHPSS)
+      atmos=atmosHPSS
+         HH0=$(( $HH + 0 ))
+         HH1=$(( $HH + 1 ))
+         HH2=$(( $HH + 2 ))
+         HH3=$(( $HH + 3 ))
+         HH4=$(( $HH + 4 ))
+         HH5=$(( $HH + 5 ))
+      unset file_list
+      for i in `seq $HH0 1 $HH5`; do
+         if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i) ];then
+            file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i)"
+         else
+            echo "gfs.${YY}${MM}${DD}_$(printf %02d $i) exists"
+         fi
+      done
+#-----------------------------------------------------------------------------------#
+      if [ ! -z $file_list ]; then
+         htar -xvf $FILEATM ${atmos}0 ${atmos}1 ${atmos}2 ${atmos}3 ${atmos}4 ${atmos}5
+         mv ${atmos}0 gfs.${YY}${MM}${DD}_$(printf %02d $HH0)
+         mv ${atmos}1 gfs.${YY}${MM}${DD}_$(printf %02d $HH1)
+         mv ${atmos}2 gfs.${YY}${MM}${DD}_$(printf %02d $HH2)
+         mv ${atmos}3 gfs.${YY}${MM}${DD}_$(printf %02d $HH3)
+         mv ${atmos}4 gfs.${YY}${MM}${DD}_$(printf %02d $HH4)
+         mv ${atmos}5 gfs.${YY}${MM}${DD}_$(printf %02d $HH5)
+      fi
+#-----------------------------------------------------------------------------------#
+     d=$(( $d + 21600 ))
+    done
+    echo '       *****************************************************************'
+    echo "GFS (grib2) files are retreived"
+    echo ' '
+    echo '       *****************************************************************'
+    echo "     ***                            done                               ***"
+    echo '       *****************************************************************'
+    echo ' '
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+fi
+#-----------------------------------------------------------------------------------#
+# convert grib2 to netcdf
+if [ $FORCING_NC = 'YES' ]
+then
+#-----------------------------------------------------------------------------------#
+#define 9 fields
+    npp=9
+    varname[1]='PRMSL'
+    varname[2]='UGRD'
+    varname[3]='VGRD'
+    varname[4]='PRES'
+    varname[5]='TMP'
+    varname[6]='DLWRF'
+    varname[7]='DSWRF'
+    varname[8]='SPFH'
+    varname[9]='PRATE'
+    lev[1]=':mean sea level:'
+    lev[2]=':10 m above ground:'
+    lev[3]=':10 m above ground:'
+    lev[4]=':surface:'
+    lev[5]=':2 m above ground:'
+    lev[6]=':surface:'
+    lev[7]=':surface:'
+    lev[8]=':2 m above ground:'
+    lev[9]=':surface:'
+#-----------------------------------------------------------------------------------#
+    echo "convert grib2 to netcdf"
+
+    d="$start"
+    echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+    echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+
+    while [[ $d -le $end ]]
+      do
+        date -d @$d '+%Y-%m-%d %2H'
+        YY=$(date -d @$d '+%Y')
+        MM=$(date -d @$d '+%m')
+        DD=$(date -d @$d '+%d')
+        HH=$(date -d @$d '+%2H')
+#-----------------------------------------------------------------------------------#
+        unset file_list
+        for i in `seq 0 1 5`; do
+           if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i).nc ];then
+              file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i)"
+           else
+              echo "gfs.${YY}${MM}${DD}_$(printf %02d $i).nc exists"
+           fi
+        done
+#-----------------------------------------------------------------------------------#
+       if [ ! -z $file_list ]; then
+         for file in $file_list
+         do
+           count=0
+           while (( count < $npp ))
+           do
+              (( count = count + 1 ))
+              wgrib2  $file -s | grep "${varname[count]}${lev[count]}" | wgrib2 -i $file -netcdf $file.${varname[count]}.nc -nc4
+              echo $count       
+              ncks -A $file.${varname[count]}.nc $file.nc
+              rm  $file.${varname[count]}.nc
+           done
+           echo $file
+         done
+       fi
+#-----------------------------------------------------------------------------------#
+       d=$(( $d + 21600 ))
+       done
+  echo '       *****************************************************************' 
+  echo "GFS (netcdf) files are generated"
+  echo ' '                                                                 
+  echo '       *****************************************************************'     
+  echo "     ***                            done                               ***"
+  echo '       *****************************************************************'    
+  echo ' '  
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+fi
+

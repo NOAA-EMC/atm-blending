@@ -1,0 +1,191 @@
+##!/bin/bash
+source ../input_vars.sh
+source ../loadmodules.sh
+  module purge
+  module use $hpcstackpath
+  module load $hpcstackversion
+  module load $modcomp
+  module load $modnetcdf
+  module load $modcdo
+  module load $modnco
+  module load $modwgrib2 
+  module load $modhpss
+  
+ module list
+#-----------------------------------------------------------------------------------#
+#cd $FORCING_PATH
+
+STARTDATE="FRC_BEG"
+ENDDATE="FRC_END"
+start=$(date -d $STARTDATE +%s)
+end=$(date -d $ENDDATE +%s)
+FORCING_MODEL='FORCING_T'
+FORCING_NC='NETCDF_SWITCH'
+#-----------------------------------------------------------------------------------#
+#                                         ATM (hourly)                              #
+#-----------------------------------------------------------------------------------#
+  echo ' '                                                                 
+  echo '       *****************************************************************'     
+  echo "      ***                     HRRR Forcing Prep                        ***"
+  echo '       *****************************************************************'    
+  echo ' ' 
+d="$start"
+echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+
+#-----------------------------------------------------------------------------------#
+# retreive HRRR 
+if [ $FORCING_MODEL = 'HRRR' ]
+   then
+   echo "retreiving HRRR (conus) ..."
+
+#-----------------------------------------------------------------------------------#
+   while [[ $d -le $end ]]
+   do
+      date -d @$d '+%Y-%m-%d %2H'
+      YY=$(date -d @$d '+%Y')
+      MM=$(date -d @$d '+%m')
+      DD=$(date -d @$d '+%d')
+      HH=$(date -d @$d '+%2H')
+#-----------------------------------------------------------------------------------#
+      FILEATM=(FILEHPSS)
+      unset file_list
+      for i in `seq 0 1 23`; do
+         if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2 ];then
+            file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+         else
+            echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2 exists"
+         fi
+      done
+#-----------------------------------------------------------------------------------#
+      if [ ! -z $file_list ]; then 
+           SOURCE0=${FILEATM}_conus00-05.wrf.tar
+           SOURCE1=./hrrr.t00z.wrfprsf00.grib2
+           SOURCE2=./hrrr.t01z.wrfprsf00.grib2
+           SOURCE3=./hrrr.t02z.wrfprsf00.grib2
+           SOURCE4=./hrrr.t03z.wrfprsf00.grib2
+           SOURCE5=./hrrr.t04z.wrfprsf00.grib2
+           SOURCE6=./hrrr.t05z.wrfprsf00.grib2
+
+           SOURCE00=${FILEATM}_conus06-11.wrf.tar
+           SOURCE7=./hrrr.t06z.wrfprsf00.grib2
+           SOURCE8=./hrrr.t07z.wrfprsf00.grib2
+           SOURCE9=./hrrr.t08z.wrfprsf00.grib2
+           SOURCE10=./hrrr.t09z.wrfprsf00.grib2
+           SOURCE11=./hrrr.t10z.wrfprsf00.grib2
+           SOURCE12=./hrrr.t11z.wrfprsf00.grib2
+
+           SOURCE000=${FILEATM}_conus12-17.wrf.tar
+           SOURCE13=./hrrr.t12z.wrfprsf00.grib2
+           SOURCE14=./hrrr.t13z.wrfprsf00.grib2
+           SOURCE15=./hrrr.t14z.wrfprsf00.grib2
+           SOURCE16=./hrrr.t15z.wrfprsf00.grib2
+           SOURCE17=./hrrr.t16z.wrfprsf00.grib2
+           SOURCE18=./hrrr.t17z.wrfprsf00.grib2
+
+           SOURCE0000=${FILEATM}_conus18-23.wrf.tar
+           SOURCE19=./hrrr.t18z.wrfprsf00.grib2
+           SOURCE20=./hrrr.t19z.wrfprsf00.grib2
+           SOURCE21=./hrrr.t20z.wrfprsf00.grib2
+           SOURCE22=./hrrr.t21z.wrfprsf00.grib2
+           SOURCE23=./hrrr.t22z.wrfprsf00.grib2
+           SOURCE24=./hrrr.t23z.wrfprsf00.grib2
+
+           htar -xv -m -f $SOURCE0 $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
+           htar -xv -m -f $SOURCE00 $SOURCE7 $SOURCE8 $SOURCE9 $SOURCE10 $SOURCE11 $SOURCE12
+           htar -xv -m -f $SOURCE000 $SOURCE13 $SOURCE14 $SOURCE15 $SOURCE16 $SOURCE17 $SOURCE18
+           htar -xv -m -f $SOURCE0000 $SOURCE19 $SOURCE20 $SOURCE21 $SOURCE22 $SOURCE23 $SOURCE24
+#-----------------------------------------------------------------------------------#   
+# move and rename
+       for i in `seq 0 1 23`; do
+          mv hrrr.t$(printf %02d $i)z.wrfprsf00.grib2 hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2
+       done
+     fi
+     d=$(( $d + 86400 ))
+   done
+#-----------------------------------------------------------------------------------#
+  echo '       *****************************************************************'
+  echo " HRRR (grib2) files are retreived"
+  echo ' '
+  echo '       *****************************************************************'
+  echo "     ***                            done                               ***"
+  echo '       *****************************************************************'
+  echo ' '
+fi
+#-----------------------------------------------------------------------------------#
+# convert grib2 to netcdf
+if [ $FORCING_NC = 'YES' ]
+then
+  echo "convert grib2 to netcdf"
+#-----------------------------------------------------------------------------------#
+#define 8 fields
+  npp=8
+  varname[1]='UGRD'
+  varname[2]='VGRD'
+  varname[3]='PRES'
+  varname[4]='TMP'
+  varname[5]='DLWRF'
+  varname[6]='DSWRF'
+  varname[7]='SPFH'
+  varname[8]='PRATE'
+
+  lev[1]=':10 m above ground:'
+  lev[2]=':10 m above ground:'
+  lev[3]=':surface:'
+  lev[4]=':2 m above ground:'
+  lev[5]=':surface:'
+  lev[6]=':surface:'
+  lev[7]=':2 m above ground:'
+  lev[8]=':surface:'
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+  d="$start"
+  echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+  echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+
+  while [[ $d -le $end ]]
+  do
+    date -d @$d '+%Y-%m-%d %2H'
+    YY=$(date -d @$d '+%Y')
+    MM=$(date -d @$d '+%m')
+    DD=$(date -d @$d '+%d')
+    HH=$(date -d @$d '+%2H')
+#-----------------------------------------------------------------------------------#
+   unset file_list
+   for i in `seq 0 1 23`; do
+     if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2.nc ];then
+       file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+     else
+       echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2.nc exists"
+     fi
+   done
+#-----------------------------------------------------------------------------------#
+   if [ ! -z $file_list ]; then
+     for file in $file_list
+     do
+     count=0
+       while (( count < $npp ))
+       do
+         (( count = count + 1 ))
+         wgrib2 $file -s | grep "${varname[count]}${lev[count]}" | wgrib2 -i $file -netcdf ${file}.${varname[count]}.nc -nc4
+         echo $count       
+         ncks -A ${file}.${varname[count]}.nc ${file}.nc
+         rm  ${file}.${varname[count]}.nc
+       done
+       echo $file
+     done
+   fi
+#-----------------------------------------------------------------------------------#
+
+   d=$(( $d + 86400 ))
+   done
+   echo '       *****************************************************************' 
+   echo "HRRR (netcdf) files are generated"
+   echo ' '                                                                 
+   echo '       *****************************************************************'     
+   echo "     ***                            done                               ***"
+   echo '       *****************************************************************'    
+   echo ' '  
+#-----------------------------------------------------------------------------------#
+fi
+

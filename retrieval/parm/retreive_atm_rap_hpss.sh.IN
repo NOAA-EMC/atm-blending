@@ -1,0 +1,193 @@
+##!/bin/bash
+source ../input_vars.sh
+source ../loadmodules.sh
+  module purge
+  module use $hpcstackpath
+  module load $hpcstackversion
+  module load $modcomp
+  module load $modnetcdf
+  module load $modcdo
+  module load $modnco
+  module load $modwgrib2 
+  module load $modhpss
+  
+ module list
+
+#cd $FORCING_PATH
+
+STARTDATE="FRC_BEG"
+ENDDATE="FRC_END"
+start=$(date -d $STARTDATE +%s)
+end=$(date -d $ENDDATE +%s)
+FORCING_MODEL='FORCING_T'
+FORCING_NC='NETCDF_SWITCH'
+#-----------------------------------------------------------------------------------#
+#                                         ATM (hourly)                              #
+#-----------------------------------------------------------------------------------#
+  echo ' '                                                                 
+  echo '       *****************************************************************'     
+  echo "      ***                      RAP Forcing Prep                        ***"
+  echo '       *****************************************************************'    
+  echo ' ' 
+
+d="$start"
+echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+#-----------------------------------------------------------------------------------#
+# retreive from rap atmos
+if [ $FORCING_MODEL = 'RAP' ]
+then
+  echo "retreiving rap"
+
+  while [[ $d -le $end ]]
+  do
+    date -d @$d '+%Y-%m-%d %2H'
+    YY=$(date -d @$d '+%Y')
+    MM=$(date -d @$d '+%m')
+    DD=$(date -d @$d '+%d')
+    HH=$(date -d @$d '+%2H')
+#-----------------------------------------------------------------------------------#
+    FILEATM=(FILEHPSS)
+    unset file_list
+    for i in `seq 0 1 23`; do
+      if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).grib2 ];then
+         file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+      else
+         echo "rap.${YY}${MM}${DD}_$(printf %02d $i).grib2 exists"
+      fi
+    done
+#-----------------------------------------------------------------------------------#
+    if [ ! -z $file_list ]; then
+        SOURCE0=${FILEATM}00-05.wrf.tar
+        SOURCE1=./rap.t00z.wrfprsf00.grib2
+        SOURCE2=./rap.t01z.wrfprsf00.grib2
+        SOURCE3=./rap.t02z.wrfprsf00.grib2
+        SOURCE4=./rap.t03z.wrfprsf00.grib2
+        SOURCE5=./rap.t04z.wrfprsf00.grib2
+        SOURCE6=./rap.t05z.wrfprsf00.grib2
+
+        SOURCE00=${FILEATM}06-11.wrf.tar
+        SOURCE7=./rap.t06z.wrfprsf00.grib2
+        SOURCE8=./rap.t07z.wrfprsf00.grib2
+        SOURCE9=./rap.t08z.wrfprsf00.grib2
+        SOURCE10=./rap.t09z.wrfprsf00.grib2
+        SOURCE11=./rap.t10z.wrfprsf00.grib2
+        SOURCE12=./rap.t11z.wrfprsf00.grib2
+ 
+        SOURCE000=${FILEATM}12-17.wrf.tar
+        SOURCE13=./rap.t12z.wrfprsf00.grib2
+        SOURCE14=./rap.t13z.wrfprsf00.grib2
+        SOURCE15=./rap.t14z.wrfprsf00.grib2
+        SOURCE16=./rap.t15z.wrfprsf00.grib2
+        SOURCE17=./rap.t16z.wrfprsf00.grib2
+        SOURCE18=./rap.t17z.wrfprsf00.grib2
+
+        SOURCE0000=${FILEATM}18-23.wrf.tar
+        SOURCE19=./rap.t18z.wrfprsf00.grib2
+        SOURCE20=./rap.t19z.wrfprsf00.grib2
+        SOURCE21=./rap.t20z.wrfprsf00.grib2
+        SOURCE22=./rap.t21z.wrfprsf00.grib2
+        SOURCE23=./rap.t22z.wrfprsf00.grib2
+        SOURCE24=./rap.t23z.wrfprsf00.grib2
+
+       htar -xv -m -f $SOURCE0 $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
+       htar -xv -m -f $SOURCE00 $SOURCE7 $SOURCE8 $SOURCE9 $SOURCE10 $SOURCE11 $SOURCE12
+       htar -xv -m -f $SOURCE000 $SOURCE13 $SOURCE14 $SOURCE15 $SOURCE16 $SOURCE17 $SOURCE18
+       htar -xv -m -f $SOURCE0000 $SOURCE19 $SOURCE20 $SOURCE21 $SOURCE22 $SOURCE23 $SOURCE24
+#-----------------------------------------------------------------------------------#
+# move and rename
+       for i in `seq 0 1 23`; do
+         mv rap.t$(printf %02d $i)z.wrfprsf00.grib2 rap.${YY}${MM}${DD}_$(printf %02d $i).grib2
+       done
+
+    fi
+    d=$(( $d + 86400 ))
+    done
+    echo '       *****************************************************************'
+    echo "RAP (grib2) files are retreived"
+    echo ' '
+    echo '       *****************************************************************'
+    echo "     ***                            done                               ***"
+    echo '       *****************************************************************'
+    echo ' '
+fi
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+if [ $FORCING_NC = 'YES' ]
+then
+   d="$start"
+   echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+   echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+#-----------------------------------------------------------------------------------#
+#define 9 fields
+   npp=9
+   varname[1]='PRMSL'
+   varname[2]='UGRD'
+   varname[3]='VGRD'
+   varname[4]='PRES'
+   varname[5]='TMP'
+   varname[6]='DLWRF'
+   varname[7]='DSWRF'
+   varname[8]='SPFH'
+   varname[9]='PRATE'
+   lev[1]=':mean sea level:'
+   lev[2]=':10 m above ground:'
+   lev[3]=':10 m above ground:'
+   lev[4]=':surface:'
+   lev[5]=':2 m above ground:'
+   lev[6]=':surface:'
+   lev[7]=':surface:'
+   lev[8]=':2 m above ground:'
+   lev[9]=':surface:'
+#-----------------------------------------------------------------------------------#
+   echo "convert grib2 to netcdf"
+# convert grib2 to netcdf (there is an error for converting to netcdf, netcdf: doesn't support yet grid_template  so I comment it out for now)
+   while [[ $d -le $end ]]
+   do
+     date -d @$d '+%Y-%m-%d %2H'
+     YY=$(date -d @$d '+%Y')
+     MM=$(date -d @$d '+%m')
+     DD=$(date -d @$d '+%d')
+     HH=$(date -d @$d '+%2H')
+
+     unset file_list
+     for i in `seq 0 1 23`; do
+       if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).grib2i.nc ];then
+          file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+       else
+          echo "rap.${YY}${MM}${DD}_$(printf %02d $i).grib2.nc exists"
+       fi
+     done
+#-----------------------------------------------------------------------------------#
+     if [ ! -z $file_list ]; then
+       for file in $file_list
+       do
+         count=0
+         while (( count < $npp ))
+         do
+           (( count = count + 1 ))
+           wgrib2 $file -s | grep "${varname[count]}${lev[count]}" | wgrib2 -i $file -netcdf ${file}.${varname[count]}.nc -nc4
+           echo $count       
+           ncks -A ${file}.${varname[count]}.nc ${file}.nc
+           rm  ${file}.${varname[count]}.nc
+         done
+         echo $file
+       done
+     fi
+#-----------------------------------------------------------------------------------#
+
+     d=$(( $d + 86400 ))
+     done
+     echo '       *****************************************************************' 
+     echo "RAP (netcdf) files are generated"
+     echo ' '                                                                 
+     echo '       *****************************************************************'     
+     echo "     ***                            done                               ***"
+     echo '       *****************************************************************'    
+     echo ' '  
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+fi
+
