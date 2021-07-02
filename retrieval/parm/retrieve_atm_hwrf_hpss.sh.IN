@@ -38,10 +38,10 @@ echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
 echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
 
 #-----------------------------------------------------------------------------------#
-# retreive from gfs atmos
+# retrieve from gfs atmos
 if [ $FORCING_MODEL = 'HWRF' ]
 then
-echo "retreiving HWRF ..."
+echo "retrieving HWRF ..."
 
 #-----------------------------------------------------------------------------------#
     while [[ $d -le $end ]]
@@ -94,7 +94,7 @@ echo "retreiving HWRF ..."
     d=$(( $d + 21600 ))
     done
     echo '       *****************************************************************'
-    echo "HWRF (grib2) files are retreived"
+    echo "HWRF (grib2) files are retrieved"
     echo ' '
     echo '       *****************************************************************'
     echo "     ***                            done                               ***"

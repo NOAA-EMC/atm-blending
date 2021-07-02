@@ -34,10 +34,10 @@ echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
 echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
 
 #-----------------------------------------------------------------------------------#
-# retreive HRRR 
+# retrieve HRRR 
 if [ $FORCING_MODEL = 'HRRR' ]
    then
-   echo "retreiving HRRR (conus) ..."
+   echo "retrieving HRRR (conus) ..."
 
 #-----------------------------------------------------------------------------------#
    while [[ $d -le $end ]]
@@ -105,7 +105,7 @@ if [ $FORCING_MODEL = 'HRRR' ]
    done
 #-----------------------------------------------------------------------------------#
   echo '       *****************************************************************'
-  echo " HRRR (grib2) files are retreived"
+  echo " HRRR (grib2) files are retrieved"
   echo ' '
   echo '       *****************************************************************'
   echo "     ***                            done                               ***"

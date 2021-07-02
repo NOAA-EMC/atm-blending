@@ -34,10 +34,10 @@ d="$start"
 echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
 echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
 #-----------------------------------------------------------------------------------#
-# retreive from rap atmos
+# retrieve from rap atmos
 if [ $FORCING_MODEL = 'RAP' ]
 then
-  echo "retreiving rap"
+  echo "retrieving rap"
 
   while [[ $d -le $end ]]
   do
@@ -104,7 +104,7 @@ then
     d=$(( $d + 86400 ))
     done
     echo '       *****************************************************************'
-    echo "RAP (grib2) files are retreived"
+    echo "RAP (grib2) files are retrieved"
     echo ' '
     echo '       *****************************************************************'
     echo "     ***                            done                               ***"

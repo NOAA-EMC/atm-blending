@@ -34,10 +34,10 @@ d="$start"
 echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
 echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
 #-----------------------------------------------------------------------------------#
-# retreive from gfs atmos
+# retrieve from gfs atmos
 if [ $FORCING_MODEL = 'GFS' ]
 then
-   echo "retreiving from gfs/atmos"
+   echo "retrieving from gfs/atmos"
 #-----------------------------------------------------------------------------------#
    while [[ $d -le $end ]]
    do
@@ -77,7 +77,7 @@ then
      d=$(( $d + 21600 ))
     done
     echo '       *****************************************************************'
-    echo "GFS (grib2) files are retreived"
+    echo "GFS (grib2) files are retrieved"
     echo ' '
     echo '       *****************************************************************'
     echo "     ***                            done                               ***"
