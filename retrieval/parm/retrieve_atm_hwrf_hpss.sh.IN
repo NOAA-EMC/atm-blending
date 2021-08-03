@@ -61,23 +61,23 @@ echo "retrieving HWRF ..."
        unset file_list
        unset file_hpss_list
            for i in `seq 0 1 9`; do
-              if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2 ];then 
-                file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2"
+              if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2 ];then 
+                file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2"
                 file_hpss_list="$file_hpss_list ${SOURCE1}$(printf %02d $i).grb2"
               else
-                echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2 exists"
+                echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2 exists"
               fi
-              if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).storm.f$(printf %02d $i).grb2 ];then
-                file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2"
+              if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2 ];then
+                file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2"
                 file_hpss_list="$file_hpss_list ${SOURCE2}$(printf %02d $i).grb2"
               else
-                echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).storm.f$(printf %02d $i).grb2 exists"
+                echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2 exists"
               fi
-              if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2 ];then
-                file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2"
+              if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2 ];then
+                file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2"
                 file_hpss_list="$file_hpss_list ${SOURCE3}$(printf %02d $i).grb2"
               else
-                echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2 exists"
+                echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2 exists"
               fi
            done
 #-----------------------------------------------------------------------------------#
@@ -85,9 +85,9 @@ echo "retrieving HWRF ..."
           htar -xvf $FILEATM ${SOURCE1}00.grb2 ${SOURCE1}01.grb2 ${SOURCE1}02.grb2 ${SOURCE1}03.grb2 ${SOURCE1}04.grb2 ${SOURCE1}05.grb2 ${SOURCE1}06.grb2 ${SOURCE1}07.grb2 ${SOURCE1}08.grb2 ${SOURCE1}09.grb2 ${SOURCE2}00.grb2 ${SOURCE2}01.grb2 ${SOURCE2}02.grb2 ${SOURCE2}03.grb2 ${SOURCE2}04.grb2 ${SOURCE2}05.grb2 ${SOURCE2}06.grb2 ${SOURCE2}07.grb2 ${SOURCE2}08.grb2 ${SOURCE2}09.grb2 ${SOURCE3}00.grb2 ${SOURCE3}01.grb2 ${SOURCE3}02.grb2 ${SOURCE3}03.grb2 ${SOURCE3}04.grb2 ${SOURCE3}05.grb2 ${SOURCE3}06.grb2 ${SOURCE3}07.grb2 ${SOURCE3}08.grb2 ${SOURCE3}09.grb2
 #-----------------------------------------------------------------------------------#
          for i in `seq 0 1 9`; do
-            mv ${SOURCE1}$(printf %02d $i).grb2 hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2
-            mv ${SOURCE2}$(printf %02d $i).grb2 hwrf.${YY}${MM}${DD}_$(printf %02d $HH).storm.f$(printf %02d $i).grb2
-            mv ${SOURCE3}$(printf %02d $i).grb2 hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2
+            mv ${SOURCE1}$(printf %02d $i).grb2 hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2
+            mv ${SOURCE2}$(printf %02d $i).grb2 hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2
+            mv ${SOURCE3}$(printf %02d $i).grb2 hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2
          done
        fi
 #-----------------------------------------------------------------------------------#
@@ -146,20 +146,20 @@ then
 # convert core_grib2 to netcdf
      unset file_list
      for i in `seq 0 1 9`; do
-        if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2.nc ];then
-            file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2"
+        if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2.nc ];then
+            file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2"
         else
-            echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2.nc exists"
+            echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).core.grib2.nc exists"
         fi
-        if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).storm.f$(printf %02d $i).grb2.nc ];then
-           file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).core.f$(printf %02d $i).grb2"
+        if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2.nc ];then
+           file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2"
         else
-           echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).storm.f$(printf %02d $i).grb2.nc exists"
+           echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).storm.grib2.nc exists"
         fi
-        if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2.nc ];then
-           file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2"
+        if [ ! -f hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2.nc ];then
+           file_list="$file_list hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2"
         else
-           echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).synoptic.f$(printf %02d $i).grb2.nc exists"
+           echo "hwrf.${YY}${MM}${DD}_$(printf %02d $HH).f$(printf %02d $i).synoptic.grib2.nc exists"
         fi
      done
 #-----------------------------------------------------------------------------------#

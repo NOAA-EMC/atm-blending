@@ -50,10 +50,10 @@ then
     FILEATM=(FILEHPSS)
     unset file_list
     for i in `seq 0 1 23`; do
-      if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).grib2 ];then
-         file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+      if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 ];then
+         file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
       else
-         echo "rap.${YY}${MM}${DD}_$(printf %02d $i).grib2 exists"
+         echo "rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 exists"
       fi
     done
 #-----------------------------------------------------------------------------------#
@@ -97,7 +97,7 @@ then
 #-----------------------------------------------------------------------------------#
 # move and rename
        for i in `seq 0 1 23`; do
-         mv rap.t$(printf %02d $i)z.wrfprsf00.grib2 rap.${YY}${MM}${DD}_$(printf %02d $i).grib2
+         mv rap.t$(printf %02d $i)z.wrfprsf00.grib2 rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2
        done
 
     fi
@@ -153,10 +153,10 @@ then
 
      unset file_list
      for i in `seq 0 1 23`; do
-       if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).grib2i.nc ];then
-          file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+       if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
+          file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
        else
-          echo "rap.${YY}${MM}${DD}_$(printf %02d $i).grib2.nc exists"
+          echo "rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
        fi
      done
 #-----------------------------------------------------------------------------------#

@@ -57,21 +57,21 @@ then
          HH5=$(( $HH + 5 ))
       unset file_list
       for i in `seq $HH0 1 $HH5`; do
-         if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i) ];then
-            file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i)"
+         if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 ];then
+            file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
          else
-            echo "gfs.${YY}${MM}${DD}_$(printf %02d $i) exists"
+            echo "gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 exists"
          fi
       done
 #-----------------------------------------------------------------------------------#
       if [ ! -z $file_list ]; then
          htar -xvf $FILEATM ${atmos}0 ${atmos}1 ${atmos}2 ${atmos}3 ${atmos}4 ${atmos}5
-         mv ${atmos}0 gfs.${YY}${MM}${DD}_$(printf %02d $HH0)
-         mv ${atmos}1 gfs.${YY}${MM}${DD}_$(printf %02d $HH1)
-         mv ${atmos}2 gfs.${YY}${MM}${DD}_$(printf %02d $HH2)
-         mv ${atmos}3 gfs.${YY}${MM}${DD}_$(printf %02d $HH3)
-         mv ${atmos}4 gfs.${YY}${MM}${DD}_$(printf %02d $HH4)
-         mv ${atmos}5 gfs.${YY}${MM}${DD}_$(printf %02d $HH5)
+         mv ${atmos}0 gfs.${YY}${MM}${DD}_$(printf %02d $HH0).f00.grib2
+         mv ${atmos}1 gfs.${YY}${MM}${DD}_$(printf %02d $HH1).f00.grib2
+         mv ${atmos}2 gfs.${YY}${MM}${DD}_$(printf %02d $HH2).f00.grib2
+         mv ${atmos}3 gfs.${YY}${MM}${DD}_$(printf %02d $HH3).f00.grib2
+         mv ${atmos}4 gfs.${YY}${MM}${DD}_$(printf %02d $HH4).f00.grib2
+         mv ${atmos}5 gfs.${YY}${MM}${DD}_$(printf %02d $HH5).f00.grib2
       fi
 #-----------------------------------------------------------------------------------#
      d=$(( $d + 21600 ))
@@ -129,10 +129,10 @@ then
 #-----------------------------------------------------------------------------------#
         unset file_list
         for i in `seq 0 1 5`; do
-           if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i).nc ];then
-              file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i)"
+           if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
+              file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
            else
-              echo "gfs.${YY}${MM}${DD}_$(printf %02d $i).nc exists"
+              echo "gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
            fi
         done
 #-----------------------------------------------------------------------------------#

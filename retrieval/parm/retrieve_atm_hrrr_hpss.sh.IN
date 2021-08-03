@@ -51,10 +51,10 @@ if [ $FORCING_MODEL = 'HRRR' ]
       FILEATM=(FILEHPSS)
       unset file_list
       for i in `seq 0 1 23`; do
-         if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2 ];then
-            file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+         if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 ];then
+            file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
          else
-            echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2 exists"
+            echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 exists"
          fi
       done
 #-----------------------------------------------------------------------------------#
@@ -98,7 +98,7 @@ if [ $FORCING_MODEL = 'HRRR' ]
 #-----------------------------------------------------------------------------------#   
 # move and rename
        for i in `seq 0 1 23`; do
-          mv hrrr.t$(printf %02d $i)z.wrfprsf00.grib2 hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2
+          mv hrrr.t$(printf %02d $i)z.wrfprsf00.grib2 hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2
        done
      fi
      d=$(( $d + 86400 ))
@@ -153,10 +153,10 @@ then
 #-----------------------------------------------------------------------------------#
    unset file_list
    for i in `seq 0 1 23`; do
-     if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2.nc ];then
-       file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2"
+     if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
+       file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
      else
-       echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).grib2.nc exists"
+       echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
      fi
    done
 #-----------------------------------------------------------------------------------#
