@@ -57,7 +57,7 @@ then
       fi
     done
 #-----------------------------------------------------------------------------------#
-    if [ ! -z $file_list ]; then
+    if [ ! -z "$file_list" ]; then
         SOURCE0=${FILEATM}00-05.wrf.tar
         SOURCE1=./rap.t00z.wrfprsf00.grib2
         SOURCE2=./rap.t01z.wrfprsf00.grib2
@@ -160,7 +160,7 @@ then
        fi
      done
 #-----------------------------------------------------------------------------------#
-     if [ ! -z $file_list ]; then
+     if [ ! -z "$file_list" ]; then
        for file in $file_list
        do
          count=0

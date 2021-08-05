@@ -81,7 +81,7 @@ echo "retrieving HWRF ..."
               fi
            done
 #-----------------------------------------------------------------------------------#
-       if [ ! -z $file_list ]; then
+       if [ ! -z "$file_list" ]; then
           htar -xvf $FILEATM ${SOURCE1}00.grb2 ${SOURCE1}01.grb2 ${SOURCE1}02.grb2 ${SOURCE1}03.grb2 ${SOURCE1}04.grb2 ${SOURCE1}05.grb2 ${SOURCE1}06.grb2 ${SOURCE1}07.grb2 ${SOURCE1}08.grb2 ${SOURCE1}09.grb2 ${SOURCE2}00.grb2 ${SOURCE2}01.grb2 ${SOURCE2}02.grb2 ${SOURCE2}03.grb2 ${SOURCE2}04.grb2 ${SOURCE2}05.grb2 ${SOURCE2}06.grb2 ${SOURCE2}07.grb2 ${SOURCE2}08.grb2 ${SOURCE2}09.grb2 ${SOURCE3}00.grb2 ${SOURCE3}01.grb2 ${SOURCE3}02.grb2 ${SOURCE3}03.grb2 ${SOURCE3}04.grb2 ${SOURCE3}05.grb2 ${SOURCE3}06.grb2 ${SOURCE3}07.grb2 ${SOURCE3}08.grb2 ${SOURCE3}09.grb2
 #-----------------------------------------------------------------------------------#
          for i in `seq 0 1 9`; do
@@ -163,7 +163,7 @@ then
         fi
      done
 #-----------------------------------------------------------------------------------#
-    if [ ! -z $file_list ]; then
+    if [ ! -z "$file_list" ]; then
        for file in $file_list
        do
        count=0

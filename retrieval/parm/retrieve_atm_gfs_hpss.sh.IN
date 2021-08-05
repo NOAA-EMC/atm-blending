@@ -64,7 +64,7 @@ then
          fi
       done
 #-----------------------------------------------------------------------------------#
-      if [ ! -z $file_list ]; then
+      if [ ! -z "$file_list" ]; then
          htar -xvf $FILEATM ${atmos}0 ${atmos}1 ${atmos}2 ${atmos}3 ${atmos}4 ${atmos}5
          mv ${atmos}0 gfs.${YY}${MM}${DD}_$(printf %02d $HH0).f00.grib2
          mv ${atmos}1 gfs.${YY}${MM}${DD}_$(printf %02d $HH1).f00.grib2
@@ -129,14 +129,14 @@ then
 #-----------------------------------------------------------------------------------#
         unset file_list
         for i in `seq 0 1 5`; do
-           if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
-              file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
+           if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $(( $HH + $i ))).f00.grib2.nc ];then
+              file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $(( $HH + $i ))).f00.grib2"
            else
-              echo "gfs.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
+              echo "gfs.${YY}${MM}${DD}_$(printf %02d $(( $HH + $i ))).f00.grib2.nc exists"
            fi
         done
 #-----------------------------------------------------------------------------------#
-       if [ ! -z $file_list ]; then
+       if [ ! -z "$file_list" ]; then
          for file in $file_list
          do
            count=0
