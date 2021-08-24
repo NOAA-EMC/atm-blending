@@ -29,6 +29,28 @@ aadd the path on HPSS HWRF
 `HWRF_STARTDATE="YYYY-MM-DDTHH:MM:SS"`   
 `HWRF_ENDDATE="YYYY-MM-DDTHH:MM:SS"`   
 
+Add the master blend domain corner (_lon_min_ and _lat_min_),  dimension (_nlon_ and _nlat_) and spatial resolution (_dlon_ and _dlat_).     
+Define the path to NDBC observations and define the regional domain coverage (_lon_w_, _lon_e_ and _lat_s_, _lat_n_).     
+     
 
  execute   
-`bash prep.sh`  
+`bash prep.sh`   
+This program fills the templates templates:     
+- Atmospheric model outputs retrival from HPSS (grib2 format).    
+- Atmospheric model interpolation to master blend domain and grib2 to NetCDF format conversion.    
+- Observation data retrieval:    
+   NDBC:     
+   It is taken from https://dods.ndbc.noaa.gov/ and avialable locally in _NDBCfiles_.     
+   Satellite:   
+   https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html:       
+   > Jason-3: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3     
+   > Sentinel-3A: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3a     
+   > Sentinel-3B: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b     
+   > CryoSat-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/c2     
+   > SARAL:  ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa/     
+   > Jason-2 available through 1 Oct. 2019.     
+     ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2       
+- Blending and recipe scripts:
+   > hwrf model integration: `forcing/blending_routine_hwrf.m`    
+   > Statitical analysis to determine the master _recipe_: `forcing/recipe_prep.m`   
+   > Blending: `forcing/blending_routine.m`          
