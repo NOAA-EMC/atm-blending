@@ -1,0 +1,163 @@
+clear all
+clc
+%-------------------------------------------------------------------------------------
+%define time frame
+t0=datenum('FRC_BEG','yyyymmdd HH:MM:SS');
+t1=datenum('FRC_END','yyyymmdd HH:MM:SS');
+time=t0:1/24:t1;
+%-------------------------------------------------------------------------------------
+for i=1:length(time)
+%-------------------------------------------------------------------------------------
+% READ Observations
+% buoy obs
+buoy_netcdf='../obs/BUOY.nc';
+var_buoy_name='station_name';
+var_buoy_lon='longitude';
+var_buoy_lat='latitude';
+var_buoy_time='time';
+var_buoy_v='wind_spd';
+% satellite obs
+sat_netcdf='../obs/satellite_obs.nc';
+var_sat_lon='lon';
+var_sat_lat='lat';
+var_sat_time='time';
+var_sat_v='wind_speed_alt';
+%-------------------------------------------------------------------------------------
+% read model 
+hwrf_nc = ['hwrf.',datestr(time(i),'yyyymmdd_HH'),'.f00.grib2.nc']
+hrrr_nc = ['hrrr.',datestr(time(i),'yyyymmdd_HH'),'.f00.grib2.nc']
+gfs_nc =  ['gfs.',datestr(time(i),'yyyymmdd_HH'),'.f00.grib2.nc']
+% gfs_nc =  ['rap.',datestr(time(i),'yyyymmdd_HH'),'.f00.grib2.nc']
+var_model_lon='longitude';
+var_model_lat='latitude';
+var_model_time='time';
+var_model_u='UGRD_10maboveground';
+var_model_v='VGRD_10maboveground';
+%-------------------------------------------------------------------------------------
+% regional boundaries
+lon_w=LONW;
+lon_e=LONE;
+lat_s=LATS;
+lat_n=LATN;
+plott=0;
+%-------------------------------------------------------------------------------------
+% Analysis and write the recipe based on Ascending RMSE
+%-------------------------------------------------------------------------------------
+% hwrf
+% satellite
+model{1}='hwrf';
+[N_GLOBAL_SAT(i,1),ERR_GLOBAL_SAT(i,1),N_REGIONAL_SAT(i,1),ERR_REGIONAL_SAT(i,1)] = ...
+    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
+    hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
+    lon_e,lat_s,lat_n,plott);
+% buoy
+[N_GLOBAL_BUOY(i,1),ERR_GLOBAL_BUOY(i,1),N_REGIONAL_BUOY(i,1),ERR_REGIONAL_BUOY(i,1)] = ...
+    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
+    var_buoy_v,hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
+    lon_w,lon_e,lat_s,lat_n,plott);
+%-------------------------------------------------------------------------------------
+% hrrr
+% satellite
+model{2}='hrrr';
+[N_GLOBAL_SAT(i,2),ERR_GLOBAL_SAT(i,2),N_REGIONAL_SAT(i,2),ERR_REGIONAL_SAT(i,2)] = ...
+    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
+    hrrr_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
+    lon_e,lat_s,lat_n,plott);
+% buoy
+[N_GLOBAL_BUOY(i,2),ERR_GLOBAL_BUOY(i,2),N_REGIONAL_BUOY(i,2),ERR_REGIONAL_BUOY(i,2)] = ...
+    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
+    var_buoy_v,hrrr_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
+    lon_w,lon_e,lat_s,lat_n,plott);
+%-------------------------------------------------------------------------------------
+% gfs
+% satellite
+model{3}='gfs';
+[N_GLOBAL_SAT(i,3),ERR_GLOBAL_SAT(i,3),N_REGIONAL_SAT(i,3),ERR_REGIONAL_SAT(i,3)] = ...
+    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
+    gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
+    lon_e,lat_s,lat_n,plott);
+% buoy
+[N_GLOBAL_BUOY(i,3),ERR_GLOBAL_BUOY(i,3),N_REGIONAL_BUOY(i,3),ERR_REGIONAL_BUOY(i,3)] = ...
+    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
+    var_buoy_v,gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
+    lon_w,lon_e,lat_s,lat_n,plott);
+%-------------------------------------------------------------------------------------
+% if there is no observation within global/regional domain, set it to 0
+ERR_REGIONAL_SAT(isnan(ERR_REGIONAL_SAT))=0;
+ERR_REGIONAL_BUOY(isnan(ERR_REGIONAL_SAT))=0;
+ERR_GLOBAL_SAT(isnan(ERR_GLOBAL_SAT))=0;
+ERR_GLOBAL_BUOY(isnan(ERR_GLOBAL_SAT))=0;
+% calculate the global and regional error based on number of observations (combined satellite and buoy)
+clear ERR_REGIONAL; clear N_REGIONAL; clear ERR_REGIONAL_SORT; clear sortIdx
+N_REGIONAL(:,1)=N_REGIONAL_SAT(i,:)+N_REGIONAL_BUOY(i,:);
+ERR_REGIONAL(:,1)=((N_REGIONAL_SAT(i,:).*ERR_REGIONAL_SAT(i,:))+(N_REGIONAL_BUOY(i,:).*ERR_REGIONAL_BUOY(i,:)))./...
+                (N_REGIONAL_SAT(i,:)+N_REGIONAL_BUOY(i,:));
+ERR_REGIONAL_TOT(i,:)=ERR_REGIONAL(:,1);
+            clear ERR_GLOBAL; clear N_GLOBAL;
+N_GLOBAL(:,1)=N_GLOBAL_SAT(i,:)+N_GLOBAL_BUOY(i,:);
+ERR_GLOBAL(:,1)=((N_GLOBAL_SAT(i,:).*ERR_GLOBAL_SAT(i,:))+(N_GLOBAL_BUOY(i,:).*ERR_GLOBAL_BUOY(i,:)))./...
+                (N_GLOBAL_SAT(i,:)+N_GLOBAL_BUOY(i,:));
+ERR_GLOBAL_TOT(i,:)=ERR_GLOBAL(:,1);
+%-------------------------------------------------------------------------------------     
+% sort the regional error to define recipe       
+[ERR_REGIONAL_SORT,sortIdx] = sort(ERR_REGIONAL,'ascend');
+% sort using the sorting index
+model_sort = model(sortIdx)
+% write recipe
+if i==1
+fileID = fopen('recipe','w');
+else
+fileID = fopen('recipe','a');
+end
+fprintf(fileID,'%s %s %s %s\n',datestr(time(i),'yyyy mm dd HH'),model_sort{1},model_sort{2},model_sort{3});
+fclose(fileID);
+%-------------------------------------------------------------------------------------
+% write stats table
+if i==1
+fileID = fopen('Statiscital_Anaylsis_o.log','w');
+fprintf(fileID,'%s %3.3f %s %3.3f  %s %3.3f  %s %3.3f\n','lon_min',lon_min,'lon_max',lon_max,'lan_min',lat_min,'lat_max',lat_max);
+fprintf(fileID,'%s\n','-----------------------------------------------------------------------------------------------');
+fprintf(fileID,'%s\n','|      Date     |           hwrf          |           hrrr          |           gfs           |');
+fprintf(fileID,'%s\n','-----------------------------------------------------------------------------------------------');
+fprintf(fileID,'%s\n','|               |   Global   |  Regional  |   Global   |  Regional  |   Global   |  Regional  |');
+fprintf(fileID,'%s\n','-----------------------------------------------------------------------------------------------');
+fprintf(fileID,'%s\n','| YYYY MM DD HH | no   error | no   error | no   error | no   error | no   error | no   error |');
+fprintf(fileID,'%s\n','-----------------------------------------------------------------------------------------------');
+
+else
+fileID = fopen('Statiscital_Anaylsis_o.log','a');
+end
+fprintf(fileID,'%s %s %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s\n','|',datestr(time(i),'yyyy mm dd HH'),'|',N_GLOBAL(1),ERR_GLOBAL(1),'|',N_REGIONAL(1),ERR_REGIONAL(1),'|',N_GLOBAL(2),ERR_GLOBAL(2),'|',N_REGIONAL(2),ERR_REGIONAL(2),'|',N_GLOBAL(3),ERR_GLOBAL(3),'|',N_REGIONAL(3),ERR_REGIONAL(3),'|');
+fclose(fileID);
+end
+%-------------------------------------------------------------------------------------
+% plot the recipe and stat
+ close all
+    width=1200;  % Width of figure for movie [pixels]
+    height=500;  % Height of figure of movie [pixels]
+    left=200;     % Left margin between figure and screen edge [pixels]
+    bottom=200;  % Bottom margin between figure and screen edge [pixels]
+
+figure
+    set(gcf,'Position', [left bottom width height])
+    
+    plot(time(1:i),ERR_GLOBAL_TOT(:,1),'--xr');
+    hold on
+    plot(time(1:i),ERR_GLOBAL_TOT(:,2),'--xb');
+    hold on
+    plot(time(1:i),ERR_GLOBAL_TOT(:,3),'--xk');
+    hold on
+    plot(time(1:i),ERR_REGIONAL_TOT(:,1),'-or');
+    hold on
+    plot(time(1:i),ERR_REGIONAL_TOT(:,2),'-ob');
+     hold on
+    plot(time(1:i),ERR_REGIONAL_TOT(:,3),'-ok');
+    legend('hwrf global','hrrr global','gfs global','hwrf regional','hrrr regional','gfs regional')
+    set(gca,'xtick',[t0:1/2:t1],'xticklabel',datestr([t0:1/2:t1],'mmm dd HH'))
+    xtickangle(90)
+    axis on
+    box on
+    grid on
+    xlabel(['Date [',datestr(t0,'yyyy'),']'],'FontSize',12)
+    ylabel('RMSE [m/s]','FontSize',12)
+    print('-dpng',['model_performance_o.png'])

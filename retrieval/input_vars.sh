@@ -58,4 +58,22 @@ export HEYEAR=$(date -d @$endh '+%Y')
 export HEMONTH=$(date -d @$endh '+%m')
 export HEDAY=$(date -d @$endh '+%d')
 export HEHOUR=$(date -d @$endh '+%2H')
-
+###############################################################################
+#interpolation
+lon_min='226.0'
+nlon='5600'
+dlon='0.015' 
+lat_min='5.0'
+nlat='3500'
+dlat='0.015'
+#compression precision
+dp='3'
+##############################################################################
+# observation
+#NDBC
+export NDBCfiles=/scratch2/COASTAL/coastal/save/NDBC
+#statistical anaysis
+lon_w='278.0'
+lon_e='288.0'
+lat_s='27.0'
+lat_n='37.0'

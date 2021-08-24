@@ -1,0 +1,262 @@
+clear all
+%-------------------------------------------------------------------------
+% Ali Abdolali (ali.abdolali@noaa.gov)
+%-------------------------------------------------------------------------
+addpath('../../tools');
+
+nx=NLON %nlon
+ny=NLAT %nlat
+
+plott=0 %plott=1 for plotting blended fields
+%variable names from original atm models
+var={'longitude','latitude','PRMSL_meansealevel','PRES_surface',...
+    'TMP_2maboveground','SPFH_2maboveground','UGRD_10maboveground',...
+    'VGRD_10maboveground','PRATE_surface','DSWRF_surface','DLWRF_surface'};
+%variable units
+Unit={'degree','degree', 'Pa', 'Pa', 'K', 'kg/kg', 'm/s', 'm/s', ...
+    'kg/m^2/s', 'W/m^2', 'W/m^2'};
+%-------------------------------------------------------------------------     
+% Read master blend recipe
+fileID = fopen('recipe');
+C = textscan(fileID,'%d %d %d %d %s %s %s')
+fclose(fileID);
+
+Y=double(C{1});%year
+M=double(C{2});%month
+D=double(C{3});%day
+H=double(C{4});%hour
+atm_mod1=C{5}(:,1);%atm model #1
+atm_mod2=C{6}(:,1);%atm model #2
+atm_mod3=C{7}(:,1);%atm model #3
+%-------------------------------------------------------------------------     
+% read recipe line by line and generate the master blend
+for m=1:length(Y)
+atm_model1=char(atm_mod1(m));
+atm_model2=char(atm_mod2(m));
+atm_model3=char(atm_mod3(m));
+YYYY= Y(m);
+MM  = M(m);
+DD  = D(m);
+HH  = H(m);
+%-------------------------------------------------------------------------     
+if isfile(['Master_blend_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc'])
+display(['Master_blend_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc exists'])
+else
+% determine if the atm model is hwrf or rap/gfs/hrrr
+clear atm1;clear atm2;clear atm3;clear final
+%atm_model1
+tf = strcmp(atm_model1,'hwrf');
+if tf==1
+    [atm1]=read_hwrf(atm_model1,YYYY,MM,DD,HH,var,nx,ny);
+else
+    [atm1]=read_atm(atm_model1,YYYY,MM,DD,HH,var,nx,ny);
+end
+%atm_model2
+tf = strcmp(atm_model2,'hwrf');
+if tf==1
+    [atm2]=read_hwrf(atm_model2,YYYY,MM,DD,HH,var,nx,ny);
+else
+    [atm2]=read_atm(atm_model2,YYYY,MM,DD,HH,var,nx,ny);
+end
+%atm_model3
+tf = strcmp(atm_model3,'hwrf');
+if tf==1
+    [atm3]=read_hwrf(atm_model3,YYYY,MM,DD,HH,var,nx,ny);
+else
+    [atm3]=read_atm(atm_model3,YYYY,MM,DD,HH,var,nx,ny);
+end
+%-------------------------------------------------------------------------     
+%blending based on recipe
+final.time=datenum([YYYY,MM,DD,HH,0,0]);
+final.latitude=atm3.latitude;
+final.longitude=atm3.longitude;
+for i=3:length(var)
+    clear level1;clear level2;clear level3;clear blended
+    level1=atm1.(sprintf(var{i}));
+    level2=atm2.(sprintf(var{i}));
+    level3=atm3.(sprintf(var{i}));
+    blended=level1;
+    blended(isnan(blended))=level2(isnan(blended));
+    blended(isnan(blended))=level3(isnan(blended));
+ final.(sprintf(var{i}))=blended;
+%-------------------------------------------------------------------------     
+%plotting fields
+   if plott==1
+   close all
+    width=1100;  % Width of figure for movie [pixels]
+    height=700;  % Height of figure of movie [pixels]
+    left=700;     % Left margin between figure and screen edge [pixels]
+    bottom=200;  % Bottom margin between figure and screen edge [pixels]
+
+    legendvar={'longitude','latitude','PRESSURE at mean sea level',...
+               'Surface PRESSURE','TEMPERATURE 2m above ground',...
+               'SPFH 2m above ground','UGRD at 10 m above ground','U_{10}',...
+               'PRATE at surface','DSWRF at surface','DLWRFat surface'};
+    % define caxis limit
+    ca=[-134 -50.025; % longitude
+        5 57.485;     % latitude
+        99500 103500; % pressure at MSL
+        70000 103500; % surface pressure
+        265 310;      % temperature
+        0 0.025;      % SPFH
+        -30 30;       % UGRD
+        0 40;         % U10
+        0 0.0005;     % rainfall rate
+        0 800;        % DSWRF
+        200 500];     % DLWRF
+    %load coastline for continent boundaries
+    load coast
+    figure
+    set(gcf,'Position', [left bottom width height])
+    % if the field is u10, then u10=sqrt(ugrd.^+vgrd.^2) 
+      if i==8 
+        field=flipud(rot90(sqrt(final.(sprintf(var{7})).^2+final.(sprintf(var{8})).^2)));
+      else
+        field=flipud(rot90(blended));
+      end
+    pcolor(final.longitude,final.latitude,field);
+    shading interp;
+    hold on
+    plot(long,lat','k');
+    title(['Blended - ',legendvar{i},' - ',datestr(final.time)],'FontSize',12);
+    h=colorbar
+    ylabel(h, ['(',Unit{i},')'],'FontSize',10);
+    colormap(jet)
+    caxis([ca(i,1) ca(i,2)]);
+    axis on
+    box on
+    xlabel('Longitude','FontSize',12)
+    ylabel('Latitude','FontSize',12)
+    print('-dpng',['Blended_',var{i},'_',datestr(final.time,'yyyymmdd-hh'),'.png'])
+   end
+end
+%-------------------------------------------------------------------------
+%nc file preparation
+ncfile=['Master_blend_',datestr(final.time,'yyyymmdd_HH'),'.nc'];
+source='Florence';
+%define dimensions
+nlon=nx;
+nlat=ny;
+nt=1;
+%convert original time to days since 1990-01-01 00:00:00
+t(:,1)=final.time-726834;
+nc = netcdf.create(ncfile, '64BIT_OFFSET');
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'start_date',datestr(final.time))
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'stop_date',datestr(final.time))
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'source',source)
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'field type','1 hr')
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'content',...
+    ['recipe: (1)',atm_model1,'; (2)',atm_model2,'; (3)',atm_model3,...
+    '; fields: 10-meter wind components, Pressure Reduced to MSL ',...
+    ', Pressure at surface, Downward Long-Wave Rad. ',...
+    'Flux and Downward Short-Wave Radiation Flux, ',...
+    'Temperature 2 m above ground, Specific Humidity 2 m '...
+    'above ground and Precipitation Rate at surface'])
+%-------------------------------------------------------------------------
+% define dimensions
+level = netcdf.defDim(nc, 'level', 1);
+nnlon = netcdf.defDim(nc, 'longitude', nlon);
+nnlat = netcdf.defDim(nc, 'latitude', nlat);
+timet = netcdf.defDim(nc, 'time', nt);
+%-------------------------------------------------------------------------
+% Variables:
+% longitude
+lon_varid=netcdf.defVar(nc, 'longitude' ,'NC_FLOAT',[nnlon]);
+netcdf.putAtt(nc, lon_varid, 'long_name', 'longitude');
+netcdf.putAtt(nc, lon_varid, 'units', 'degree_east');
+netcdf.putAtt(nc, lon_varid, 'field', 'lon, scalar, series');
+% latitude
+lat_varid=netcdf.defVar(nc, 'latitude' ,'NC_FLOAT',[nnlat]);
+netcdf.putAtt(nc, lat_varid, 'long_name', 'latitude');
+netcdf.putAtt(nc, lat_varid, 'units', 'degree_north');
+netcdf.putAtt(nc, lat_varid, 'field', 'lat, scalar, series');
+% time
+time_varid = netcdf.defVar(nc, 'time', 'double', [timet]);
+netcdf.putAtt(nc, time_varid, 'long_name', 'julian day (UT)');
+netcdf.putAtt(nc, time_varid, 'units', 'days since 1990-01-01 00:00:00');
+netcdf.putAtt(nc, time_varid, 'field', 'time, scalar, series');
+netcdf.putAtt(nc, time_varid, 'conventions', 'relative julian days with decimal part (as parts of the day )');
+netcdf.putAtt(nc, time_varid, 'axis', 'T');
+% UGRD
+u_varid=netcdf.defVar(nc, 'U2D' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, u_varid, 'units', 'm s-1');
+netcdf.putAtt(nc, u_varid, 'field', 'U, scalar, series');
+netcdf.putAtt(nc, u_varid, 'long_name', 'eastward_wind');
+% VGRD
+v_varid=netcdf.defVar(nc, 'V2D' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, v_varid, 'units', 'm s-1');
+netcdf.putAtt(nc, v_varid, 'field', 'V, scalar, series');
+netcdf.putAtt(nc, v_varid, 'long_name', 'northward_wind');
+% PRMSL
+p_varid=netcdf.defVar(nc, 'P' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, p_varid, 'units', 'Pa');
+netcdf.putAtt(nc, p_varid, 'field', 'P, scalar, series');
+netcdf.putAtt(nc, p_varid, 'long_name', 'Surface reduced to MSL');
+% DLWRF
+uu_varid=netcdf.defVar(nc, 'LWDOWN' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, uu_varid, 'units', 'W/m^2');
+netcdf.putAtt(nc, uu_varid, 'field', 'DLWRF_surface, scalar, series');
+netcdf.putAtt(nc, uu_varid, 'long_name', 'Downward Long-Wave Rad. Flux');
+% DSWRF
+vv_varid=netcdf.defVar(nc, 'SWDOWN' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, vv_varid, 'units', 'W/m^2');
+netcdf.putAtt(nc, vv_varid, 'field', 'DSWRF_surface, scalar, series');
+netcdf.putAtt(nc, vv_varid, 'long_name', 'Downward Short-Wave Radiation Flux');
+% Surface Pressure
+pp_varid=netcdf.defVar(nc, 'PSFC' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, pp_varid, 'units', 'Pa');
+netcdf.putAtt(nc, pp_varid, 'field', 'PRES_surface, scalar, series');
+netcdf.putAtt(nc, pp_varid, 'long_name', 'Pressure at surface');
+% Temperature
+uuu_varid=netcdf.defVar(nc, 'T2D' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, uuu_varid, 'units', 'K');
+netcdf.putAtt(nc, uuu_varid, 'field', 'TMP_2maboveground, scalar, series');
+netcdf.putAtt(nc, uuu_varid, 'long_name', 'Temperature 2 m above ground');
+% SPFH
+vvv_varid=netcdf.defVar(nc, 'Q2D' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, vvv_varid, 'units', 'kg/kg');
+netcdf.putAtt(nc, vvv_varid, 'field', 'SPFH_2maboveground, scalar, series');
+netcdf.putAtt(nc, vvv_varid, 'long_name', 'Specific Humidity 2 m above ground');
+% Rainfall rate
+ppp_varid=netcdf.defVar(nc, 'RAINRATE' ,'NC_FLOAT',[nnlon,nnlat,timet]);
+netcdf.putAtt(nc, ppp_varid, 'units', 'kg/m^2/s');
+netcdf.putAtt(nc, ppp_varid, 'field', 'PRATE_surface, scalar, series');
+netcdf.putAtt(nc, ppp_varid, 'long_name', 'Precipitation Rate at surface');
+
+netcdf.endDef(nc);
+%-------------------------------------------------------------------------
+% fill fields
+netcdf.putVar(nc, time_varid, t);
+netcdf.putVar(nc, lon_varid, final.longitude);
+netcdf.putVar(nc, lat_varid, final.latitude);
+netcdf.putVar(nc, u_varid, final.UGRD_10maboveground);
+netcdf.putVar(nc, v_varid, final.UGRD_10maboveground);
+netcdf.putVar(nc, p_varid, final.PRMSL_meansealevel);
+netcdf.putVar(nc, uu_varid, final.DLWRF_surface);
+netcdf.putVar(nc, vv_varid, final.DLWRF_surface);
+netcdf.putVar(nc, pp_varid, final.PRES_surface);
+netcdf.putVar(nc, uuu_varid, final.TMP_2maboveground);
+netcdf.putVar(nc, vvv_varid, final.SPFH_2maboveground);
+netcdf.putVar(nc, ppp_varid, final.PRATE_surface);
+netcdf.close(nc);
+%-------------------------------------------------------------------------
+% _fill_value
+fileattrib(ncfile,'+w');
+ncwriteatt(ncfile,'U2D','_FillValue', int32(9.969209968386869e+36));
+ncwriteatt(ncfile,'V2D','_FillValue', int32(9.969209968386869e+36));
+ncwriteatt(ncfile,'P','_FillValue', int32(9.969209968386869e+36));
+ncwriteatt(ncfile,'T2D','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'Q2D','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'RAINRATE','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'PSFC','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'LWDOWN','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'SWDOWN','FillValue', int32(1e+21));
+end
+end
+%-------------------------------------------------------------------------
+% Read atm models
+%-------------------------------------------------------------------------
+%[hwrf]=read_hwrf('hwrf',YYYY,MM,DD,HH,var,nx,ny)
+%[gfs]=read_atm('gfs',YYYY,MM,DD,HH,var,nx,ny)
+%[hrrr]=read_atm('hrrr',YYYY,MM,DD,HH,var,nx,ny)
+

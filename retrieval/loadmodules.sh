@@ -1,8 +1,8 @@
 #!/bin/bash
 ishera=`hostname | grep hfe`
   isorion=`hostname | grep Orion`
-  if [ $ishera ]
-  then
+#  if [ $ishera ]
+#  then
     # If no other h, assuming Hera 
     cmplr='hera.intel'
     batchq='slurm'
@@ -14,6 +14,6 @@ ishera=`hostname | grep hfe`
     modcdo='cdo/1.9.10'
     modnco='nco/4.9.3'
     modhpss='hpss'
-  fi
+#  fi
 
 
