@@ -132,7 +132,7 @@ fclose(fileID);
 %-------------------------------------------------------------------------------------
 % write stats table
 if i==1
-fileID = fopen('Statiscital_Anaylsis_o.log','w');
+fileID = fopen('Statiscital_Anaylsis.log','w');
 fprintf(fileID,'%s %3.3f %s %3.3f  %s %3.3f  %s %3.3f\n','lon_min',lon_w,'lon_max',lon_e,'lan_min',lat_s,'lat_max',lat_n);
 fprintf(fileID,'%s\n','-------------------------------------------------------------------------------------------------------------------------');
 fprintf(fileID,'%s\n','|      Date     |           hwrf          |           hrrr          |           gfs           |           rap           ');
@@ -143,7 +143,7 @@ fprintf(fileID,'%s\n','| YYYY MM DD HH | no   error | no   error | no   error | 
 fprintf(fileID,'%s\n','-------------------------------------------------------------------------------------------------------------------------');
 
 else
-fileID = fopen('Statiscital_Anaylsis_o.log','a');
+fileID = fopen('Statiscital_Anaylsis.log','a');
 end
 fprintf(fileID,'%s %s %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s %04d %2.3f %s\n','|',datestr(time(i),'yyyy mm dd HH'),'|',N_GLOBAL(1),ERR_GLOBAL(1),'|',N_REGIONAL(1),ERR_REGIONAL(1),'|',N_GLOBAL(2),ERR_GLOBAL(2),'|',N_REGIONAL(2),ERR_REGIONAL(2),'|',N_GLOBAL(3),ERR_GLOBAL(3),'|',N_REGIONAL(3),ERR_REGIONAL(3),'|',N_GLOBAL(4),ERR_GLOBAL(4),'|',N_REGIONAL(4),ERR_REGIONAL(4),'|');
 fclose(fileID);
@@ -188,5 +188,5 @@ figure
     box on
     grid on
     xlabel(['Date [',datestr(t0,'yyyy'),']'],'FontSize',12)
-    ylabel('Regional (RMSE) [m/s],'fontSize',12)
+    ylabel('Regional (RMSE) [m/s]','fontSize',12)
     print('-dpng',['model_performance.png'])
