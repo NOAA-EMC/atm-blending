@@ -39,10 +39,12 @@ echo -e "\e[34mHRRR Forcing templates are filled\e[0m"
 #-----------------------------------------------------------------------------------#
 export FORCING_T="RAP"
 #netcdf
-NETCDF_SWITCH="NO"
+NETCDF_SWITCH="YES"
 NETCDF_COMP="NO"
 source edit_inputs.sh
 edit_forcing_rap < parm/retrieve_atm_rap_hpss.sh.IN > forcing/retrieve_atm_rap_hpss.sh
+edit_forcing_rap < parm/rap_grib2_projection.sh.IN > forcing/rap_grib2_projection.sh
+edit_forcing_rap < parm/rap_grib2_to_nc4.sh.IN > forcing/rap_grib2_to_nc4.sh
 echo -e "\e[34mRAP Forcing templates are filled\e[0m"
 #-----------------------------------------------------------------------------------#
 #                          4- Forcing HWRF                                          #
@@ -66,13 +68,17 @@ echo -e "\e[34mSatellite obs templates is filled\e[0m"
 edit_obs < parm/retrieve_buoy.sh.IN > obs/retrieve_buoy.sh
 echo -e "\e[34mBuoy obs templates is filled\e[0m"
 #-----------------------------------------------------------------------------------#
-#                     6- Blending and recipe                                        #
+#                     6- Blending and recipe and smoothing                          #
 #-----------------------------------------------------------------------------------#
 source edit_inputs.sh
 edit_blending < parm/blending_routine.m.IN > forcing/blending_routine.m
+echo -e "\e[34mblending_routine.m templates is filled\e[0m"
 edit_blending < parm/blending_routine_hwrf.m.IN > forcing/blending_routine_hwrf.m
+echo -e "\e[34mblending_routine_hwrf.m templates is filled\e[0m"
 edit_recipe < parm/recipe_prep.m.IN > forcing/recipe_prep.m
-
+echo -e "\e[34mrecipe_prep.m templates is filled\e[0m"
+edit_smoothing < parm/smooth_fields.sh.IN > forcing/smooth_fields.sh
+echo -e "\e[34msmooth_fields.sh templates is filled\e[0m"
 #-----------------------------------------------------------------------------------#
 #                             EXECUTION                                             #
 #-----------------------------------------------------------------------------------#
@@ -92,7 +98,7 @@ cd ${HOME}/forcing
 #                          9- Forcing RAP (13 km) Retrieval                         #
 #-----------------------------------------------------------------------------------#
 cd ${HOME}/forcing
-#      bash retrieve_atm_rap_hpss.sh
+      bash retrieve_atm_rap_hpss.sh
       echo -e "\e[31mRAP ATM file is retrieved\e[0m"     
 #-----------------------------------------------------------------------------------#
 #                         10- Forcing HWRF Retrieval                                #
@@ -123,4 +129,10 @@ cd $HOME/obs
        echo -e "\e[31mBuoy files are downloaded\e[0m"
    fi
 #-----------------------------------------------------------------------------------#
-
+#                        12- plotting fields                                        #
+#-----------------------------------------------------------------------------------#
+# plotting fields
+cd $HOME
+edit_blending < parm/plotting_master_blend.m.IN > forcing/plotting_master_blend.m
+echo -e "\e[34mplotting_master_blend.m templates is filled\e[0m"
+#-----------------------------------------------------------------------------------#

@@ -1,0 +1,141 @@
+clear all
+%-------------------------------------------------------------------------
+% Ali Abdolali (ali.abdolali@noaa.gov)
+%-------------------------------------------------------------------------
+addpath('../../tools');
+
+nx=NLON %nlon
+ny=NLAT %nlat
+
+%variable names from original atm models
+vars={'longitude','latitude','P','PSFC','T2D','Q2D','U2D','V2D','RAINRATE','SWDOWN','LWDOWN'};
+%variable units
+Units={'degree','degree', 'Pa', 'Pa', 'K', 'kg/kg', 'm/s', 'm/s', ...
+    'kg/m^2/s', 'W/m^2', 'W/m^2'};
+
+var={'longitude','latitude','P','PSFC','T2D','Q2D','U10','RAINRATE','SWDOWN','LWDOWN'};
+   
+%-------------------------------------------------------------------------     
+% Read master blend recipe
+fileID = fopen('recipe');
+C = textscan(fileID,'%d %d %d %d %s %s %s %s')
+fclose(fileID);
+
+Y=double(C{1});%year
+M=double(C{2});%month
+D=double(C{3});%day
+H=double(C{4});%hour
+atm_mod1=C{5}(:,1);%atm model #1
+atm_mod2=C{6}(:,1);%atm model #2
+atm_mod3=C{7}(:,1);%atm model #3
+atm_mod4=C{8}(:,1);%atm model #4
+%-------------------------------------------------------------------------     
+    width=1100;  % Width of figure for movie [pixels]
+    height=700;  % Height of figure of movie [pixels]
+    left=700;     % Left margin between figure and screen edge [pixels]
+    bottom=200;  % Bottom margin between figure and screen edge [pixels]
+for n=3:length(var) 
+    close all
+% Set up file and options for creating the movividObj = VideoWriter('HsStormHSOFSHWRF_Sandy');  % Set filename to write video file
+vidObj = VideoWriter([var{n}]);  % Set filename to write video file
+vidObj.FrameRate=10;  % Define the playback framerate [frames/sec]
+open(vidObj);
+figure
+set(gcf,'Position', [left bottom width height])
+clf
+
+% read recipe line by line and generate the master blend
+for m=1:length(Y)
+atm_model1=char(atm_mod1(m));
+atm_model2=char(atm_mod2(m));
+atm_model3=char(atm_mod3(m));
+atm_model4=char(atm_mod4(m));
+YYYY= Y(m);
+MM  = M(m);
+DD  = D(m);
+HH  = H(m);
+%-------------------------------------------------------------------------     
+ncf=['Master_blend_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc']
+if ~isfile(ncf)
+display([ncf,' does not exist'])
+else
+    clear final
+   final.time=convert_time(ncf,'time');
+% for u10=sqrt(final.U2D.^2+final.V2D.^2)
+   if n==7 
+       q=[1,2,7,8];
+   elseif n<=6
+       q=[1,2,n];
+   else
+       q=[1,2,n+1];
+   end
+   
+    for i=1:length(q)
+         % check if variable exists
+          ncid = netcdf.open(ncf,'nowrite');
+          logic=1;
+          try
+             ID = netcdf.inqVarID(ncid,vars{q(i)});
+              catch exception
+              if strcmp(exception.identifier,'MATLAB:imagesci:netcdf:libraryFailure')
+              logic = 0;
+              end
+          end
+          netcdf.close(ncid)
+
+          if logic==1
+             final.(sprintf(vars{q(i)}))=double(ncread(ncf,vars{q(i)}));
+          else 
+             final.(sprintf(vars{q(i)}))=nan*ones(nx,ny);
+             display([vars{q(i)},' does not exist'])
+          end
+     end
+        if n==7
+          final.U10=sqrt(final.U2D.^2+final.V2D.^2);
+        end
+
+    legendvar={'longitude','latitude','PRESSURE at mean sea level',...
+               'Surface PRESSURE','TEMPERATURE 2m above ground',...
+               'SPFH 2m above ground','U_{10}',...
+               'PRATE at surface','DSWRF at surface','DLWRF at surface'};
+     Unit={'degree','degree', 'Pa', 'Pa', 'K', 'kg/kg', 'm/s', ...
+    'kg/m^2/s', 'W/m^2', 'W/m^2'};      
+    % define caxis limit
+    ca=[-134 -50.025; % longitude
+        5 57.485;     % latitude
+        99500 103500; % pressure at MSL
+        70000 103500; % surface pressure
+        265 310;      % temperature
+        0 0.025;      % SPFH
+        0 40;         % U10
+        0 0.0005;     % rainfall rate
+        0 800;        % DSWRF
+        200 500];     % DLWRF
+    %load coastline for continent boundaries
+    load coast
+
+    field=flipud(rot90(final.(sprintf(var{n}))));
+    pcolor(final.longitude,final.latitude,field);
+    shading interp;
+    hold on
+    plot(long,lat','k');
+    title(['Blended - ',legendvar{n},' - ',datestr(final.time),'- recipe: (1) ',...
+        atm_model1,'-(2) ',atm_model2,'-(3) ',atm_model3,'-(4) ',atm_model4,' '],'FontSize',12);
+    h=colorbar
+    ylabel(h, ['(',Unit{n},')'],'FontSize',10);
+    colormap(jet)
+    caxis([ca(n,1) ca(n,2)]);
+    axis on
+    box on
+    xlabel('Longitude','FontSize',12)
+    ylabel('Latitude','FontSize',12)
+end
+   currFrame = getframe(gcf);
+    writeVideo(vidObj,currFrame);  % Get each recorded frame and write it to filename defined above
+
+end
+
+
+close(vidObj);   
+ 
+end    

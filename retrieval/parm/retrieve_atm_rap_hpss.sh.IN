@@ -9,7 +9,9 @@ source ../loadmodules.sh
   module load $modcdo
   module load $modnco
   module load $modwgrib2 
-  module load $modhpss
+  module load gnu
+  module load wgrib2/3.0.2_ncep
+  module load hpss
   
  module list
 
@@ -37,7 +39,7 @@ echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
 # retrieve from rap atmos
 if [ $FORCING_MODEL = 'RAP' ]
 then
-  echo "retrieving rap"
+  echo "retrieving rap on its native grid"
 
   while [[ $d -le $end ]]
   do
@@ -50,10 +52,10 @@ then
     FILEATM=(FILEHPSS)
     unset file_list
     for i in `seq 0 1 23`; do
-      if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 ];then
-         file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
+      if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).f00.prs.grib2 ];then
+         file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).f00.prs.grib2"
       else
-         echo "rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2 exists"
+         echo "rap.${YY}${MM}${DD}_$(printf %02d $i).f00.prs.grib2 exists"
       fi
     done
 #-----------------------------------------------------------------------------------#
@@ -97,7 +99,7 @@ then
 #-----------------------------------------------------------------------------------#
 # move and rename
        for i in `seq 0 1 23`; do
-         mv rap.t$(printf %02d $i)z.wrfprsf00.grib2 rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2
+         mv rap.t$(printf %02d $i)z.wrfprsf00.grib2 rap.${YY}${MM}${DD}_$(printf %02d $i).f00.prs.grib2
        done
 
     fi
@@ -112,82 +114,3 @@ then
     echo ' '
 fi
 #-----------------------------------------------------------------------------------#
-#-----------------------------------------------------------------------------------#
-#-----------------------------------------------------------------------------------#
-if [ $FORCING_NC = 'YES' ]
-then
-   d="$start"
-   echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
-   echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
-#-----------------------------------------------------------------------------------#
-#define 9 fields
-   npp=9
-   varname[1]='PRMSL'
-   varname[2]='UGRD'
-   varname[3]='VGRD'
-   varname[4]='PRES'
-   varname[5]='TMP'
-   varname[6]='DLWRF'
-   varname[7]='DSWRF'
-   varname[8]='SPFH'
-   varname[9]='PRATE'
-   lev[1]=':mean sea level:'
-   lev[2]=':10 m above ground:'
-   lev[3]=':10 m above ground:'
-   lev[4]=':surface:'
-   lev[5]=':2 m above ground:'
-   lev[6]=':surface:'
-   lev[7]=':surface:'
-   lev[8]=':2 m above ground:'
-   lev[9]=':surface:'
-#-----------------------------------------------------------------------------------#
-   echo "convert grib2 to netcdf"
-# convert grib2 to netcdf (there is an error for converting to netcdf, netcdf: doesn't support yet grid_template  so I comment it out for now)
-   while [[ $d -le $end ]]
-   do
-     date -d @$d '+%Y-%m-%d %2H'
-     YY=$(date -d @$d '+%Y')
-     MM=$(date -d @$d '+%m')
-     DD=$(date -d @$d '+%d')
-     HH=$(date -d @$d '+%2H')
-
-     unset file_list
-     for i in `seq 0 1 23`; do
-       if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
-          file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
-       else
-          echo "rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
-       fi
-     done
-#-----------------------------------------------------------------------------------#
-     if [ ! -z "$file_list" ]; then
-       for file in $file_list
-       do
-         count=0
-         while (( count < $npp ))
-         do
-           (( count = count + 1 ))
-           wgrib2 $file -s | grep "${varname[count]}${lev[count]}" | wgrib2 -i $file -netcdf ${file}.${varname[count]}.nc -nc4
-           echo $count       
-           ncks -A ${file}.${varname[count]}.nc ${file}.nc
-           rm  ${file}.${varname[count]}.nc
-         done
-         echo $file
-       done
-     fi
-#-----------------------------------------------------------------------------------#
-
-     d=$(( $d + 86400 ))
-     done
-     echo '       *****************************************************************' 
-     echo "RAP (netcdf) files are generated"
-     echo ' '                                                                 
-     echo '       *****************************************************************'     
-     echo "     ***                            done                               ***"
-     echo '       *****************************************************************'    
-     echo ' '  
-#-----------------------------------------------------------------------------------#
-#-----------------------------------------------------------------------------------#
-#-----------------------------------------------------------------------------------#
-fi
-

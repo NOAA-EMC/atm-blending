@@ -18,7 +18,7 @@ Unit={'degree','degree', 'Pa', 'Pa', 'K', 'kg/kg', 'm/s', 'm/s', ...
 %-------------------------------------------------------------------------     
 % Read master blend recipe
 fileID = fopen('recipe');
-C = textscan(fileID,'%d %d %d %d %s %s %s')
+C = textscan(fileID,'%d %d %d %d %s %s %s %s')
 fclose(fileID);
 
 Y=double(C{1});%year
@@ -28,12 +28,14 @@ H=double(C{4});%hour
 atm_mod1=C{5}(:,1);%atm model #1
 atm_mod2=C{6}(:,1);%atm model #2
 atm_mod3=C{7}(:,1);%atm model #3
+atm_mod4=C{8}(:,1);%atm model #4
 %-------------------------------------------------------------------------     
 % read recipe line by line and generate the master blend
 for m=1:length(Y)
 atm_model1=char(atm_mod1(m));
 atm_model2=char(atm_mod2(m));
 atm_model3=char(atm_mod3(m));
+atm_model4=char(atm_mod4(m));
 YYYY= Y(m);
 MM  = M(m);
 DD  = D(m);
@@ -65,19 +67,28 @@ if tf==1
 else
     [atm3]=read_atm(atm_model3,YYYY,MM,DD,HH,var,nx,ny);
 end
+%atm_model4
+tf = strcmp(atm_model4,'hwrf');
+if tf==1
+    [atm4]=read_hwrf(atm_model4,YYYY,MM,DD,HH,var,nx,ny);
+else
+    [atm4]=read_atm(atm_model4,YYYY,MM,DD,HH,var,nx,ny);
+end
 %-------------------------------------------------------------------------     
 %blending based on recipe
 final.time=datenum([YYYY,MM,DD,HH,0,0]);
-final.latitude=atm3.latitude;
-final.longitude=atm3.longitude;
+final.latitude=atm4.latitude;
+final.longitude=atm4.longitude;
 for i=3:length(var)
-    clear level1;clear level2;clear level3;clear blended
+    clear level1;clear level2;clear level3;clear level4;clear blended
     level1=atm1.(sprintf(var{i}));
     level2=atm2.(sprintf(var{i}));
     level3=atm3.(sprintf(var{i}));
+    level4=atm4.(sprintf(var{i}));
     blended=level1;
     blended(isnan(blended))=level2(isnan(blended));
     blended(isnan(blended))=level3(isnan(blended));
+    blended(isnan(blended))=level4(isnan(blended));
  final.(sprintf(var{i}))=blended;
 %-------------------------------------------------------------------------     
 %plotting fields
@@ -91,7 +102,7 @@ for i=3:length(var)
     legendvar={'longitude','latitude','PRESSURE at mean sea level',...
                'Surface PRESSURE','TEMPERATURE 2m above ground',...
                'SPFH 2m above ground','UGRD at 10 m above ground','U_{10}',...
-               'PRATE at surface','DSWRF at surface','DLWRFat surface'};
+               'PRATE at surface','DSWRF at surface','DLWRF at surface'};
     % define caxis limit
     ca=[-134 -50.025; % longitude
         5 57.485;     % latitude
@@ -133,7 +144,7 @@ end
 %-------------------------------------------------------------------------
 %nc file preparation
 ncfile=['Master_blend_',datestr(final.time,'yyyymmdd_HH'),'.nc'];
-source='Florence';
+source='EVENT';
 %define dimensions
 nlon=nx;
 nlat=ny;
@@ -146,7 +157,7 @@ netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'stop_date',datestr(final.tim
 netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'source',source)
 netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'field type','1 hr')
 netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'content',...
-    ['recipe: (1)',atm_model1,'; (2)',atm_model2,'; (3)',atm_model3,...
+    ['recipe: (1)',atm_model1,'; (2)',atm_model2,'; (3)',atm_model3,'; (4)',atm_model4,...
     '; fields: 10-meter wind components, Pressure Reduced to MSL ',...
     ', Pressure at surface, Downward Long-Wave Rad. ',...
     'Flux and Downward Short-Wave Radiation Flux, ',...

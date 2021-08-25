@@ -10,7 +10,6 @@ source ../loadmodules.sh
   module load $modnco
   module load $modwgrib2 
   module load $modhpss
-  
  module list
 #-----------------------------------------------------------------------------------#
 #cd $FORCING_PATH
@@ -27,7 +26,7 @@ NC_COMP='NETCDF_COMP'
 #-----------------------------------------------------------------------------------#
   echo ' '                                                                 
   echo '       *****************************************************************'     
-  echo "      ***                  HRRR Forcing Prep (nc4)                     ***"
+  echo "      ***                   RAP Forcing Prep (nc4)                     ***"
   echo '       *****************************************************************'    
   echo ' ' 
 #-----------------------------------------------------------------------------------#
@@ -50,21 +49,17 @@ then
 #-----------------------------------------------------------------------------------#
    unset file_list
    for i in `seq 0 1 23`; do
-     if [ ! -f hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
-       file_list="$file_list hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
+     if [ ! -f rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc ];then
+       file_list="$file_list rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2"
      else
-       echo "hrrr.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
+       echo "rap.${YY}${MM}${DD}_$(printf %02d $i).f00.grib2.nc exists"
      fi
    done
 #-----------------------------------------------------------------------------------#
        if [ ! -z "$file_list" ]; then
          for file in $file_list
          do
-         wgrib2 $file -match "PRMSL:mean sea level:|UGRD:10 m above ground:|VGRD:10 m above ground:|PRES:surface:|TMP:2 m above ground:|DLWRF:surface:|DSWRF:surface:|SPFH:2 m above ground:|PRATE:surface:" -set_grib_type c2 -new_grid_winds grid -new_grid_vectors "UGRD:VGRD" -new_grid_interpolation bilinear -new_grid latlon LON_MIN:NLON:DLON LAT_MIN:NLAT:DLAT tmp.$file
-         wgrib2 tmp.$file -netcdf $file.nc -nc4
-           if [ -f tmp.$file ];then
-             rm -f tmp.$file
-           fi
+         wgrib2 $file -netcdf $file.nc -nc4
              if [ $NC_COMP = 'YES' ]
              then
                 if [ -f tmp1.$file.nc ];then
@@ -84,7 +79,7 @@ then
    d=$(( $d + 86400 ))
    done
    echo '       *****************************************************************' 
-   echo "HRRR (netcdf) files are generated"
+   echo "RAP (netcdf) files are generated"
    echo ' '                                                                 
    echo '       *****************************************************************'     
    echo "     ***                            done                               ***"

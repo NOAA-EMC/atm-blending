@@ -19,15 +19,12 @@ STARTDATE="FRC_BEG"
 ENDDATE="FRC_END"
 start=$(date -d $STARTDATE +%s)
 end=$(date -d $ENDDATE +%s)
-FORCING_MODEL='FORCING_T'
-FORCING_NC='NETCDF_SWITCH'
-NC_COMP='NETCDF_COMP'
 #-----------------------------------------------------------------------------------#
-#                                         ATM (hourly)                              #
+#                                         Smooth fields                             #
 #-----------------------------------------------------------------------------------#
   echo ' '                                                                 
   echo '       *****************************************************************'     
-  echo "      ***                    GFS Forcing Prep (nc4)                     ***"
+  echo "      ***                    Smooth fields (nc4)                       ***"
   echo '       *****************************************************************'    
   echo ' ' 
 
@@ -35,11 +32,7 @@ d="$start"
 echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
 echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
 #-----------------------------------------------------------------------------------#
-# convert grib2 to netcdf
-if [ $FORCING_NC = 'YES' ]
-then
-#-----------------------------------------------------------------------------------#
-    echo "convert grib2 to netcdf"
+    echo "smooth netcdf files"
 
     d="$start"
     echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
@@ -53,44 +46,23 @@ then
         DD=$(date -d @$d '+%d')
         HH=$(date -d @$d '+%2H')
 #-----------------------------------------------------------------------------------#
-        unset file_list
-        for i in `seq 0 1 5`; do
-           if [ ! -f gfs.${YY}${MM}${DD}_$(printf %02d $(( $HH + $i ))).f00.grib2.nc ];then
-              file_list="$file_list gfs.${YY}${MM}${DD}_$(printf %02d $(( $HH + $i ))).f00.grib2"
+           file="Master_blend_${YY}${MM}${DD}_$(printf %02d $(( $HH ))).nc"
+           file_smooth="Master_blend_smooth_${YY}${MM}${DD}_$(printf %02d $(( $HH ))).nc"
+           if [ ! -f ${file_smooth} ];then
+              if [ -f ${file} ];then
+                cdo -f nc -smooth9 $file $file_smooth
+              else
+                echo "$file does not exist"
+              fi
            else
-              echo "gfs.${YY}${MM}${DD}_$(printf %02d $(( $HH + $i ))).f00.grib2.nc exists"
+              echo "$file_smooth exists"
            fi
-        done
-#-----------------------------------------------------------------------------------#
-       if [ ! -z "$file_list" ]; then
-         for file in $file_list
-         do
-         wgrib2 $file -match "PRMSL:mean sea level:|UGRD:10 m above ground:|VGRD:10 m above ground:|PRES:surface:|TMP:2 m above ground:|DLWRF:surface:|DSWRF:surface:|SPFH:2 m above ground:|PRATE:surface:" -set_grib_type c2 -new_grid_winds grid -new_grid_vectors "UGRD:VGRD" -new_grid_interpolation bilinear -new_grid latlon LON_MIN:NLON:DLON LAT_MIN:NLAT:DLAT tmp.$file
-         wgrib2 tmp.$file -netcdf $file.nc -nc4
-           if [ -f tmp.$file ];then
-             rm -f tmp.$file
-           fi
-             if [ $NC_COMP = 'YES' ]
-             then
-                if [ -f tmp1.$file.nc ];then 
-                  rm -f tmp1.$file.nc 
-                fi
-                if [ -f tmp2.$file.nc ];then 
-                  rm -f tmp2.$file.nc 
-                fi
-                ncks -4 -L 1 $file.nc tmp1.$file.nc
-                ncks --ppc default=.DP tmp1.$file.nc tmp2.$file.nc
-                mv tmp2.$file.nc $file.nc
-             fi
-         echo "$file.nc"
-         done
-       fi
-#-----------------------------------------------------------------------------------#
-       d=$(( $d + 21600 ))
-       done
-rm tmp*
+#----------------------------------------------------------------------------------#
+       d=$(( $d + 3600 ))
+      done
+
   echo '       *****************************************************************' 
-  echo "GFS (netcdf) files are generated"
+  echo "Smoothing is completed"
   echo ' '                                                                 
   echo '       *****************************************************************'     
   echo "     ***                            done                               ***"
@@ -99,5 +71,5 @@ rm tmp*
 #-----------------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------------#
-fi
+
 

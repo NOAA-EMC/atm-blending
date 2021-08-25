@@ -100,7 +100,7 @@ end
 %-------------------------------------------------------------------------
 %nc file preparation
 ncfile=['hwrf.',datestr(final.time,'yyyymmdd_HH'),'.f00.grib2.nc'];
-source='Florence';
+source='EVENT';
 %define dimensions
 nlon=nx;
 nlat=ny;
