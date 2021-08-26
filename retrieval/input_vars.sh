@@ -77,3 +77,7 @@ lon_w='278.0'
 lon_e='288.0'
 lat_s='27.0'
 lat_n='37.0'
+##############################################################################
+# unstructured meshes
+export fix_mesh=/scratch2/COASTAL/coastal/save/fix_WW3_Optimization/Meshes
+export unstr_mesh=EC_120m.msh

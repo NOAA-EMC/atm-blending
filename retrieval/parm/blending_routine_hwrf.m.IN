@@ -4,8 +4,8 @@ clear all
 %-------------------------------------------------------------------------
 addpath('../../tools');
 
-nx=NLON %nlon
-ny=NLAT %nlat
+nx=NLON; %nlon
+ny=NLAT; %nlat
 
        
 plott=0 %plott=1 for plotting blended fields

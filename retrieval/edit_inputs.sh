@@ -119,3 +119,15 @@ function edit_recipe {
        -e "s/LATS/$lat_s/g" \
        -e "s/LATN/$lat_n/g"
 }
+
+function edit_unstr_interp {
+
+  SDATEATM="${SYEAR}${SMONTH}${SDAY} ${SHOUR}:00:00"
+  EDATEATM="${EYEAR}${EMONTH}${EDAY} ${EHOUR}:00:00"
+  sed  -e "s/FRC_BEG/$SDATEATM/g" \
+       -e "s/FRC_END/$EDATEATM/g" \
+       -e "s/UNSTR_MESH/$unstr_mesh/g" \
+       -e "s/EVENT/$event/g" \
+       -e "s/NLON/$nlon/g"\
+       -e "s/NLAT/$nlat/g"
+}

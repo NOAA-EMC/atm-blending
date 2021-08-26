@@ -1,0 +1,151 @@
+clear all
+clc
+addpath('../../tools')
+%-------------------------------------------------------------------------------------
+nx=NLON; %nlon
+ny=NLAT; %nlat
+%define time frame
+t0=datenum('FRC_BEG','yyyymmdd HH:MM:SS');
+t1=datenum('FRC_END','yyyymmdd HH:MM:SS');
+unstr_mesh='UNSTR_MESH';
+plott=0;
+ [tri,x,y,z] = readWW3mesh(unstr_mesh,plott);
+%-------------------------------------------------------------------------------------
+%variable names from original atm models
+vars={'longitude','latitude','P','PSFC','T2D','Q2D','U2D','V2D','RAINRATE','SWDOWN','LWDOWN'};
+%variable units
+Units={'degree','degree', 'Pa', 'Pa', 'K', 'kg/kg', 'm/s', 'm/s', ...
+    'kg/m^2/s', 'W/m^2', 'W/m^2'};
+var={'longitude','latitude','P','U2D','V2D'};
+%-------------------------------------------------------------------------------------
+% Read master blend recipe
+fileID = fopen('recipe');
+C = textscan(fileID,'%d %d %d %d %s %s %s %s')
+fclose(fileID);
+
+Y=double(C{1});%year
+M=double(C{2});%month
+D=double(C{3});%day
+H=double(C{4});%hour
+atm_mod1=C{5}(:,1);%atm model #1
+atm_mod2=C{6}(:,1);%atm model #2
+atm_mod3=C{7}(:,1);%atm model #3
+atm_mod4=C{8}(:,1);%atm model #4
+%-------------------------------------------------------------------------------------
+% read recipe line by line and generate the master blend
+for m=1:length(Y)
+atm_model1=char(atm_mod1(m));
+atm_model2=char(atm_mod2(m));
+atm_model3=char(atm_mod3(m));
+atm_model4=char(atm_mod4(m));
+YYYY= Y(m);
+MM  = M(m);
+DD  = D(m);
+HH  = H(m);
+%-------------------------------------------------------------------------------------
+ncf=['Master_blend_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc'];
+if ~isfile(ncf)
+display([ncf,' does not exist'])
+else
+% read u10, v10 and P from master blend
+     master.longitude=ncread(ncf,'longitude');
+     master.latitude=ncread(ncf,'latitude');
+     master.U2D=ncread(ncf,'U2D');
+     master.V2D=ncread(ncf,'V2D');
+     master.P=ncread(ncf,'P');
+     master.time=datenum([YYYY,MM,DD,HH,0,0]);
+%-------------------------------------------------------------------------------------
+% interpolate on unstructured mesh
+UU=flipud(rot90(master.U2D(:,:)));
+VV=flipud(rot90(master.V2D(:,:)));
+PP=flipud(rot90(master.P(:,:)));
+UT=interp2(master.longitude,master.latitude,UU,x,y,'linear');
+VT=interp2(master.longitude,master.latitude,VV,x,y,'linear');
+PT=interp2(master.longitude,master.latitude,PP,x,y,'linear');
+UTT(:,1)=UT;
+VTT(:,1)=VT;
+PTT(:,1)=PT;
+time(1,1)=master.time;    
+datestr(master.time)
+%-------------------------------------------------------------------------------------
+% nc file preparation 
+ncfile=['Master_blend_UNSTR_MESH_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc'];
+source='EVENT';
+[nnode,nt] = size(UTT);
+[noell,eelem] = size(tri);
+t(:,1)=time-726834;
+size(t);
+
+nc = netcdf.create(ncfile, '64BIT_OFFSET');
+%-------------------------------------------------------------------------------------
+% define global attributes
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'start_date',datestr(time(1)))
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'stop_date',datestr(time(1)))
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'source',source)
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'field type','1 hr')
+netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'content',...
+     ['recipe: (1)',atm_model1,'; (2)',atm_model2,'; (3)',atm_model3,'; (4)',atm_model4,...
+    '; fields: 10-meter wind components, Pressure Reduced to MSL'])
+%-------------------------------------------------------------------------------------
+% define dimensions
+level = netcdf.defDim(nc, 'level', 1);
+node = netcdf.defDim(nc, 'node', nnode);
+element = netcdf.defDim(nc, 'element', eelem);
+timet = netcdf.defDim(nc, 'time', nt);
+noel= netcdf.defDim(nc, 'noel', noell);
+%-------------------------------------------------------------------------------------
+%Variables:
+%-------------------------------------------------------------------------------------
+lon_varid=netcdf.defVar(nc, 'longitude' ,'double',[node]);
+netcdf.putAtt(nc, lon_varid, 'long_name', 'longitude');
+netcdf.putAtt(nc, lon_varid, 'units', 'degree_east');
+netcdf.putAtt(nc, lon_varid, 'field', 'lon, scalar, series');
+%-------------------------------------------------------------------------------------
+lat_varid=netcdf.defVar(nc, 'latitude' ,'double',[node]);
+netcdf.putAtt(nc, lat_varid, 'long_name', 'latitude');
+netcdf.putAtt(nc, lat_varid, 'units', 'degree_north');
+netcdf.putAtt(nc, lat_varid, 'field', 'lat, scalar, series');
+%-------------------------------------------------------------------------------------
+time_varid = netcdf.defVar(nc, 'time', 'double', timet);
+netcdf.putAtt(nc, time_varid, 'long_name', 'julian day (UT)');
+netcdf.putAtt(nc, time_varid, 'units', 'days since 1990-01-01 00:00:00');
+netcdf.putAtt(nc, time_varid, 'field', 'time, scalar, series');
+netcdf.putAtt(nc, time_varid, 'conventions', 'relative julian days with decimal part (as parts of the day )');
+netcdf.putAtt(nc, time_varid, 'axis', 'T');
+%-------------------------------------------------------------------------------------
+tri_varid=netcdf.defVar(nc, 'tri' ,'NC_INT',[noel,element]);
+%-------------------------------------------------------------------------------------
+u_varid=netcdf.defVar(nc, 'uwnd' ,'NC_FLOAT',[node, timet]);
+netcdf.putAtt(nc, u_varid, 'units', 'm s-1');
+netcdf.putAtt(nc, u_varid, 'field', 'U, scalar, series');
+netcdf.putAtt(nc, u_varid, 'long_name', 'eastward_wind');
+%-------------------------------------------------------------------------------------
+v_varid=netcdf.defVar(nc, 'vwnd' ,'NC_FLOAT',[node, timet]);
+netcdf.putAtt(nc, v_varid, 'units', 'm s-1');
+netcdf.putAtt(nc, v_varid, 'field', 'V, scalar, series');
+netcdf.putAtt(nc, v_varid, 'long_name', 'northward_wind');
+%-------------------------------------------------------------------------------------
+p_varid=netcdf.defVar(nc, 'P' ,'NC_FLOAT',[node, timet]);
+netcdf.putAtt(nc, p_varid, 'units', 'Pa');
+netcdf.putAtt(nc, p_varid, 'field', 'V, scalar, series');
+netcdf.putAtt(nc, p_varid, 'long_name', 'Pressure Reduced to MSL');
+%-------------------------------------------------------------------------------------
+netcdf.endDef(nc);
+%-------------------------------------------------------------------------------------
+netcdf.putVar(nc, time_varid, t);
+netcdf.putVar(nc, lon_varid, x);
+netcdf.putVar(nc, lat_varid, y);
+netcdf.putVar(nc, tri_varid, tri);
+netcdf.putVar(nc, u_varid, UTT);
+netcdf.putVar(nc, v_varid, VTT);
+netcdf.putVar(nc, p_varid, PTT);
+netcdf.close(nc);
+%-------------------------------------------------------------------------------------
+% _fill_values
+fileattrib(ncfile,'+w');
+ncwriteatt(ncfile,'uwnd','_FillValue', 9.969209968386869e+36);
+ncwriteatt(ncfile,'vwnd','_FillValue', 9.969209968386869e+36);
+ncwriteatt(ncfile,'P','_FillValue', 9.969209968386869e+36);
+%-------------------------------------------------------------------------------------
+end
+end
