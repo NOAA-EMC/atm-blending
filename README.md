@@ -87,6 +87,7 @@ This program fills the templates templates:
 ### 3- Statistical Analysis and recipe preparation.         
 - Recipe preparation based models' output comparison with observations (RMSE) within impacted area (computational node):        
  `forcing/recipe_prep.m`    
+ This script generates `Statiscital_Anaylsis.log` and `recipe`.      
 ### 4- Master Blend Preparation.      
 - Blending model outputs based on the `recipe` (computational node):    
  `forcing/blending_routine.m`      
