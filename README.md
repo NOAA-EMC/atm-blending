@@ -53,4 +53,44 @@ This program fills the templates templates:
 - Blending and recipe scripts:
    > hwrf model integration: `forcing/blending_routine_hwrf.m`    
    > Statitical analysis to determine the master _recipe_: `forcing/recipe_prep.m`   
-   > Blending: `forcing/blending_routine.m`          
+   > Blending: `forcing/blending_routine.m`      
+- Interpolation on unstrcutured meshes for WW3 and ADCRIC models
+   > `forcing/str_2_unstr_interp.m`     
+ 
+## The generated programs should be excuted  in the following order:    
+### 1- ATM Data Retrieval. 
+- GFS output retrieval from HPSS (login node):       
+ `forcing/retrieve_atm_gfs_hpss.sh`      
+- GFS output interpolation on the master blend domain and convert grib2 to NeTCDF (computational node):       
+ `forcing/gfs_grib2_to_nc4.sh` (optional)      
+- HRRR output retrieval from HPSS (login node):       
+ `forcing/retrieve_atm_hrrr_hpss.sh`      
+- HRRR output interpolation on the master blend domain and convert grib2 to NeTCDF (computational node):       
+ `forcing/hrrr_grib2_to_nc4.sh` (optional)      
+- HWRF output retrieval from HPSS (login node):       
+ `forcing/retrieve_atm_hwrf_hpss.sh`      
+- HWRF output interpolation on the master blend domain and convert grib2 to NeTCDF (computational node):       
+ `forcing/hwrf_grib2_to_nc4.sh` (optional)      
+- RAP output retrieval from HPSS (login node):       
+ `forcing/retrieve_atm_rap_hpss.sh`      
+- RAP model output projection NCEP rotated latlon (cmoputational node):     
+ `forcing/rap_grib2_projection.sh`      
+- RAP output interpolation on the master blend domain and convert grib2 to NeTCDF (cmoputational node):       
+ `forcing/rap_grib2_to_nc4.sh` (optional)    
+- Integrate HWRF outputs (native grids: core, storm, synoptic) with cycle2cycle smoothing (computational node):       
+ `forcing/blending_routine_hwrf.m`      
+### 2- Observaton Data Retrieval.      
+- Buoy (login node):       
+ `forcing/retrieve_buoy.sh`      
+- Satellite Altimeters (login node):      
+ `forcing/retrieve_sat_alt.sh`      
+### 3- Statistical Analysis and recipe preparation.         
+- Recipe preparation based models' output comparison with observations (RMSE) within impacted area (computational node):        
+ `forcing/recipe_prep.m`    
+### 4- Master Blend Preparation.      
+- Blending model outputs based on the `recipe` (computational node):    
+ `forcing/blending_routine.m`      
+### 5- Interpolation on Downstream models' domain.      
+- Interpolation on the trinagular unstructured mesh (computational node):      
+ `forcing/str_2_unstr_interp.m`      
+
