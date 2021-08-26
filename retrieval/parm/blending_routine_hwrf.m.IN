@@ -196,7 +196,7 @@ netcdf.putVar(nc, time_varid, t);
 netcdf.putVar(nc, lon_varid, final.longitude);
 netcdf.putVar(nc, lat_varid, final.latitude);
 netcdf.putVar(nc, u_varid, final.UGRD_10maboveground);
-netcdf.putVar(nc, v_varid, final.UGRD_10maboveground);
+netcdf.putVar(nc, v_varid, final.VGRD_10maboveground);
 netcdf.putVar(nc, p_varid, final.PRMSL_meansealevel);
 netcdf.putVar(nc, uu_varid, final.DLWRF_surface);
 netcdf.putVar(nc, vv_varid, final.DLWRF_surface);
