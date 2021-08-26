@@ -4,8 +4,8 @@ clear all
 %-------------------------------------------------------------------------
 addpath('../../tools');
 
-nx=NLON %nlon
-ny=NLAT %nlat
+nx=NLON; %nlon
+ny=NLAT; %nlat
 
 %variable names from original atm models
 vars={'longitude','latitude','P','PSFC','T2D','Q2D','U2D','V2D','RAINRATE','SWDOWN','LWDOWN'};
