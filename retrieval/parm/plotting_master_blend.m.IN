@@ -42,10 +42,9 @@ vidObj.FrameRate=10;  % Define the playback framerate [frames/sec]
 open(vidObj);
 figure
 set(gcf,'Position', [left bottom width height])
-clf
-
 % read recipe line by line and generate the master blend
 for m=1:length(Y)
+clf
 atm_model1=char(atm_mod1(m));
 atm_model2=char(atm_mod2(m));
 atm_model3=char(atm_mod3(m));
