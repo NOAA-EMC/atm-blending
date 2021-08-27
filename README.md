@@ -40,16 +40,15 @@ This program fills the templates templates:
 - Atmospheric model interpolation to master blend domain and grib2 to NetCDF format conversion.    
 - Observation data retrieval:    
    NDBC:     
-   It is taken from https://dods.ndbc.noaa.gov/ and avialable locally in _NDBCfiles_.     
-   Satellite:   
-   https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html:       
-   - Jason-3: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3     
+   It is taken from [NDBC](https://dods.ndbc.noaa.gov/) and avialable locally in _NDBCfiles_.     
+   Satellite ([coastwatch](https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html)):     
+   - Jason-3: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3    
    - Sentinel-3A: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3a     
-   - Sentinel-3B: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b     
+   - Sentinel-3B: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b    
    - CryoSat-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/c2     
-   - SARAL:  ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa/     
-   - Jason-2 available through 1 Oct. 2019.     
-     ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2       
+   - SARAL: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa     
+   - Jason-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2 (available through 1 Oct. 2019).     
+           
 - Blending and recipe scripts:
    - hwrf model integration: `forcing/blending_routine_hwrf.m`    
    - Statitical analysis to determine the master _recipe_: `forcing/recipe_prep.m`   
