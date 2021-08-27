@@ -40,22 +40,21 @@ This program fills the templates templates:
 - Atmospheric model interpolation to master blend domain and grib2 to NetCDF format conversion.    
 - Observation data retrieval:    
    NDBC:     
-   It is taken from https://dods.ndbc.noaa.gov/ and avialable locally in _NDBCfiles_.     
-   Satellite:   
-   https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html:       
-   > Jason-3: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3     
-   > Sentinel-3A: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3a     
-   > Sentinel-3B: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b     
-   > CryoSat-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/c2     
-   > SARAL:  ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa/     
-   > Jason-2 available through 1 Oct. 2019.     
-     ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2       
+   It is taken from [NDBC](https://dods.ndbc.noaa.gov/) and avialable locally in _NDBCfiles_.     
+   Satellite ([coastwatch](https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html)):     
+   - Jason-3: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3    
+   - Sentinel-3A: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3a     
+   - Sentinel-3B: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b    
+   - CryoSat-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/c2     
+   - SARAL: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa     
+   - Jason-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2 (available through 1 Oct. 2019).     
+           
 - Blending and recipe scripts:
-   > hwrf model integration: `forcing/blending_routine_hwrf.m`    
-   > Statitical analysis to determine the master _recipe_: `forcing/recipe_prep.m`   
-   > Blending: `forcing/blending_routine.m`      
+   - hwrf model integration: `forcing/blending_routine_hwrf.m`    
+   - Statitical analysis to determine the master _recipe_: `forcing/recipe_prep.m`   
+   - Blending: `forcing/blending_routine.m`      
 - Interpolation on unstrcutured meshes for WW3 and ADCRIC models
-   > `forcing/str_2_unstr_interp.m`     
+   - `forcing/str_2_unstr_interp.m`     
  
 ## The generated programs should be excuted  in the following order:    
 ### 1- ATM Data Retrieval. 
@@ -92,6 +91,12 @@ This program fills the templates templates:
 - Blending model outputs based on the `recipe` (computational node):    
  `forcing/blending_routine.m`      
 ### 5- Interpolation on Downstream models' domain.      
-- Interpolation on the trinagular unstructured mesh (computational node):      
+- Interpolation on the trinagular unstructured mesh- hourly (computational node):      
  `forcing/str_2_unstr_interp.m`      
-
+ - Append hourly atmospheric foricng including wind speed at 10 m and pressure at MSL into one single netcdf file (computational node):      
+ `forcing/append_unstr_nc4.sh`      
+### 6- plotting the Master blend (optional).    
+- plotting atmospheric forcing from the master blend files on the master blend domain:      
+ `forcing/plotting_master_blend.m`    
+- plotting atmospheric forcing from the master blend interpolated on the unstructured domain:      
+ `forcing/plotting_master_blend_unstr.m`     
