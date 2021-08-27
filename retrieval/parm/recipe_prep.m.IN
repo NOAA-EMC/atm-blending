@@ -41,6 +41,7 @@ lon_e=LONE;
 lat_s=LATS;
 lat_n=LATN;
 plott=0;
+DT=DELTAT;
 %-------------------------------------------------------------------------------------
 % Analysis and write the recipe based on Ascending RMSE
 %-------------------------------------------------------------------------------------
@@ -51,12 +52,12 @@ model{j}='hwrf';
 [N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
     satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
     hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
-    lon_e,lat_s,lat_n,plott);
+    lon_e,lat_s,lat_n,DT,plott);
 % buoy
 [N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
     buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
     var_buoy_v,hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
-    lon_w,lon_e,lat_s,lat_n,plott);
+    lon_w,lon_e,lat_s,lat_n,DT,plott);
 %-------------------------------------------------------------------------------------
 % hrrr
 j=2;
@@ -65,12 +66,12 @@ model{2}='hrrr';
 [N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
     satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
     hrrr_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
-    lon_e,lat_s,lat_n,plott);
+    lon_e,lat_s,lat_n,DT,plott);
 % buoy
 [N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
     buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
     var_buoy_v,hrrr_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
-    lon_w,lon_e,lat_s,lat_n,plott);
+    lon_w,lon_e,lat_s,lat_n,DT,plott);
 %-------------------------------------------------------------------------------------
 % gfs
 j=3;
@@ -79,12 +80,12 @@ model{3}='gfs';
 [N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
     satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
     gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
-    lon_e,lat_s,lat_n,plott);
+    lon_e,lat_s,lat_n,DT,plott);
 % buoy
 [N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
     buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
     var_buoy_v,gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
-    lon_w,lon_e,lat_s,lat_n,plott);
+    lon_w,lon_e,lat_s,lat_n,DT,plott);
 %-------------------------------------------------------------------------------------
 % rap
 j=4;
@@ -93,12 +94,12 @@ model{4}='rap';
 [N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
     satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
     rap_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
-    lon_e,lat_s,lat_n,plott);
+    lon_e,lat_s,lat_n,DT,plott);
 % buoy
 [N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
     buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
     var_buoy_v,rap_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
-    lon_w,lon_e,lat_s,lat_n,plott);
+    lon_w,lon_e,lat_s,lat_n,DT,plott);
 %-------------------------------------------------------------------------------------
 % if there is no observation within global/regional domain, set it to 0
 ERR_REGIONAL_SAT(isnan(ERR_REGIONAL_SAT))=0;
@@ -159,13 +160,13 @@ end
 figure
   set(gcf,'Position', [left bottom width height])
     subplot(2,1,1)
-    plot(time(1:i),ERR_GLOBAL_TOT(:,1),'-r');
+    plot(time(1:i),ERR_GLOBAL_TOT(:,1),'-r','linewidth',2);
     hold on
-    plot(time(1:i),ERR_GLOBAL_TOT(:,2),'-b');
+    plot(time(1:i),ERR_GLOBAL_TOT(:,2),'-b','linewidth',2);
     hold on
-    plot(time(1:i),ERR_GLOBAL_TOT(:,3),'-k');
+    plot(time(1:i),ERR_GLOBAL_TOT(:,3),'-k','linewidth',2);
     hold on
-    plot(time(1:i),ERR_GLOBAL_TOT(:,4),'-m');
+    plot(time(1:i),ERR_GLOBAL_TOT(:,4),'-m','linewidth',2);
     legend('hwrf','hrrr','gfs','rap');
     set(gca,'xtick',[t0:1/2:t1],'xticklabel',datestr([t0:1/2:t1],'mmm dd HH'))
     xtickangle(90)
@@ -174,13 +175,13 @@ figure
     grid on
     ylabel('Global (RMSE) [m/s]','FontSize',12)
   subplot(2,1,2)
-    plot(time(1:i),ERR_REGIONAL_TOT(:,1),'-r');
+    plot(time(1:i),ERR_REGIONAL_TOT(:,1),'-r','linewidth',2);
     hold on
-    plot(time(1:i),ERR_REGIONAL_TOT(:,2),'-b');
+    plot(time(1:i),ERR_REGIONAL_TOT(:,2),'-b','linewidth',2);
     hold on
-    plot(time(1:i),ERR_REGIONAL_TOT(:,3),'-k');
+    plot(time(1:i),ERR_REGIONAL_TOT(:,3),'-k','linewidth',2);
     hold on
-    plot(time(1:i),ERR_REGIONAL_TOT(:,4),'-m');
+    plot(time(1:i),ERR_REGIONAL_TOT(:,4),'-m','linewidth',2);
     title('Regional Skill (RMSE)', 'Fontsize',14);
     set(gca,'xtick',[t0:1/2:t1],'xticklabel',datestr([t0:1/2:t1],'mmm dd HH'))
     xtickangle(90)

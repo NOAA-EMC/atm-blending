@@ -118,7 +118,8 @@ function edit_recipe {
        -e "s/LONW/$lon_w/g" \
        -e "s/LONE/$lon_e/g" \
        -e "s/LATS/$lat_s/g" \
-       -e "s/LATN/$lat_n/g"
+       -e "s/LATN/$lat_n/g" \
+       -e "s/DELTAT/$DELTAT/g" 
 }
 
 function edit_unstr_interp {

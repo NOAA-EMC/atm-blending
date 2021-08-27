@@ -64,7 +64,7 @@ lon_min='226.0'
 nlon='5600'
 dlon='0.015' 
 lat_min='5.0'
-nlat='3500'
+nlat='3700'
 dlat='0.015'
 #compression precision
 dp='3'
@@ -77,6 +77,7 @@ lon_w='278.0'
 lon_e='288.0'
 lat_s='27.0'
 lat_n='37.0'
+DELTAT='6.0'
 ##############################################################################
 # unstructured meshes
 export fix_mesh=/scratch2/COASTAL/coastal/save/fix_WW3_Optimization/Meshes

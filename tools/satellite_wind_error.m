@@ -1,4 +1,4 @@
-function [N_GLOBAL,ERR_GLOBAL,N_REGIONAL,ERR_REGIONAL] = satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,model_netcdf,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_min,lon_max,lat_min,lat_max,plott)
+function [N_GLOBAL,ERR_GLOBAL,N_REGIONAL,ERR_REGIONAL] = satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,model_netcdf,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_min,lon_max,lat_min,lat_max,DT,plott)
 %-------------------------------------------------------------------------
 % This program compares the satellite observation (along track) and model %
 % outouts (gridded).                                                      %
@@ -21,6 +21,7 @@ function [N_GLOBAL,ERR_GLOBAL,N_REGIONAL,ERR_REGIONAL] = satellite_wind_error(sa
 %model [P,M] (v component)
 %[lon_min lon_max]: logitude minimum and maximum bounds for regional analysis
 %[lat_min lat_max]: latitude minimum and maximum bounds for regional analysis
+%DT: time frame for model validation [t-DT/2-t+DT/2] (hr)
 % PLOTT: plot the data if plott=1 
 %%%%%%%%%%%%%%%%%%%    OUTPUT    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %N_GLOBAL: number of observations and model outputs for all data
@@ -34,7 +35,7 @@ function [N_GLOBAL,ERR_GLOBAL,N_REGIONAL,ERR_REGIONAL] = satellite_wind_error(sa
 %[N_GLOBAL,ERR_GLOBAL,N_REGIONAL,ERR_REGIONAL] = satellite_wind_error...
 %('satellite.nc','lon','lat','time','wind_speed_alt','gfs.nc',...
 %'longitude','latitude','time','UGRD_10maboveground',...
-%'VGRD_10maboveground',40,60,10,50)
+%'VGRD_10maboveground',40,60,10,50,1,0)
 %-------------------------------------------------------------------------
 %read satellie data
 latsat=double(ncread(sat_netcdf,var_sat_lat));
@@ -50,8 +51,8 @@ latmodel=double(ncread(model_netcdf,var_model_lat));
 lonmodel=double(ncread(model_netcdf,var_model_lon));
 lonmodel(lonmodel<0)=lonmodel(lonmodel<0)+360;
 [timemod]=convert_time(model_netcdf,var_model_time);
-%duplicate variable 30 min before and 30 min after timemodel
-timemodel=[timemod-1/24/2; timemod+1/24/2];
+%duplicate variable DT/2 hr before and DT/2 hr after timemodel
+timemodel=[timemod-DT/24/2; timemod+DT/24/2];
 umod=double(ncread(model_netcdf,var_model_u));
 umod_d(:,:,1)=umod;umod_d(:,:,2)=umod;
 vmod=double(ncread(model_netcdf,var_model_v));
@@ -106,25 +107,29 @@ ERR_REGIONAL = sqrt(nanmean((VMODEL_REGIONAL-vsat2).^2));  % Root Mean Squared E
     hold on
     scatter(lonsat2(~isnan(DIFF_REGIONAL)),latsat2(~isnan(DIFF_REGIONAL)),'r')
     hold on
-    plot(long,lat,'k');
+    plot(long,lat,'k','linewidth',2);
     hold on
-    plot([lon_min lon_max lon_max lon_min lon_min],[lat_min lat_min lat_max lat_max lat_min],'m')
+    plot([lon_min lon_max lon_max lon_min lon_min],[lat_min lat_min lat_max lat_max lat_min],'m','linewidth',2);
     box on
     axis on
+    axis equal
     xlim([nanmin(lonmodel),nanmax(lonmodel)])
     ylim([nanmin(latmodel),nanmax(latmodel)])
     xlabel('Longitude','FontSize',12)
     ylabel('Latitude','FontSize',12)
-    
+    title(['Date: ',datestr(timemod)],'FontSize',12)
     subplot(1,2,2)
     p1=scatter(vsat,VMODEL_GLOBAL,'xb');
     hold on;
     p2=scatter(vsat2,VMODEL_REGIONAL,'or');
     hold on
-    p3=plot([0 10],[0 10],'k')
-    legend([p1,p2,p3],['global-master Blend N = ',num2str(N_GLOBAL),' RMSE = ',num2str(ERR_GLOBAL)],['Regional N = ',num2str(N_REGIONAL),' RMSE = ',num2str(ERR_REGIONAL)],'1:1')
-    xlim([0 10])
-    ylim([0 10])
+    p3=plot([0 40],[0 40],'--k','linewidth',2)
+    legend([p1,p2,p3],['global-master Blend N = ',num2str(N_GLOBAL),' RMSE = ',num2str(ERR_GLOBAL)],['Regional N = ',num2str(N_REGIONAL),' RMSE = ',num2str(ERR_REGIONAL)],'1:1','location','northoutside')
+    max_val=nanmax(nanmax(VMODEL_GLOBAL(in)),nanmax(vsat(in)))+1;
+    max_val(isempty(max_val))=1;
+    max_val(isnan(max_val))=1
+    xlim([0 max_val])
+    ylim([0 max_val])
     axis on
     box on
     grid on
