@@ -36,7 +36,6 @@ atm_mod4=C{8}(:,1);%atm model #4
     bottom=200;  % Bottom margin between figure and screen edge [pixels]
 for n=3:length(var) 
     close all
-% Set up file and options for creating the movividObj = VideoWriter('HsStormHSOFSHWRF_Sandy');  % Set filename to write video file
 vidObj = VideoWriter([var{n}]);  % Set filename to write video file
 vidObj.FrameRate=10;  % Define the playback framerate [frames/sec]
 open(vidObj);

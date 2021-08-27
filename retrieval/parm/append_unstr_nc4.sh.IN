@@ -1,0 +1,86 @@
+##!/bin/bash
+source ../input_vars.sh
+source ../loadmodules.sh
+  module purge
+  module use $hpcstackpath
+  module load $hpcstackversion
+  module load $modcomp
+  module load $modnetcdf
+  module load $modcdo
+  module load $modnco
+  module load $modwgrib2 
+  module load $modhpss
+  
+  module list
+
+STARTDATE="FRC_BEG"
+ENDDATE="FRC_END"
+
+start=$(date -d $STARTDATE +%s)
+end=$(date -d $ENDDATE +%s)
+FORCING_MODEL='GFS'
+FORCING_NC='YES'
+NC_COMP='NO'
+#-----------------------------------------------------------------------------------#
+#                                ATM (hourly) data Append                           #
+#-----------------------------------------------------------------------------------#
+  echo ' '                                                                 
+  echo '       *****************************************************************'     
+  echo "      ***               Master Blend data Append (unstr.)               ***"
+  echo '       *****************************************************************'    
+  echo ' ' 
+
+d="$start"
+echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+#-----------------------------------------------------------------------------------#
+    echo "Appending hourly files into one file (unstr.) ..."
+
+    d="$start"
+    echo "start date: $(date -d @$start '+%Y-%m-%d %2H')"
+    echo "end date: $(date -d @$end '+%Y-%m-%d %2H')"
+
+    unset file_list
+    unset file1
+    while [[ $d -le $end ]]
+       do
+         date -d @$d '+%Y-%m-%d %2H'
+         YY=$(date -d @$d '+%Y')
+         MM=$(date -d @$d '+%m')
+         DD=$(date -d @$d '+%d')
+         HH=$(date -d @$d '+%2H')
+#-----------------------------------------------------------------------------------#
+            file="Master_blend_UNSTR_MESH_${YY}${MM}${DD}_${HH}.nc" 
+            if [ -f "$file" ];then
+               if [ -z $file1 ];then
+                 file1=$file
+               else  
+               file_list="$file_list $file"
+               fi 
+            else
+               echo "$file does not exist"
+            fi
+#-----------------------------------------------------------------------------------#
+         d=$(( $d + 3600 ))
+       done
+echo "first file = $file1"
+echo "second files:last file = $file_list"
+#-----------------------------------------------------------------------------------#
+# append
+if [ ! -z "$file_list" ]
+then
+   ncks -O --mk_rec_dmn time $file1 out.nc
+   ncrcat -h out.nc $file_list Master_blend_UNSTR_MESH.nc
+   rm out.nc
+fi
+  echo '       *****************************************************************' 
+  echo "netcdf files are appended"
+  echo ' '                                                                 
+  echo '       *****************************************************************'     
+  echo "     ***                            done                               ***"
+  echo '       *****************************************************************'    
+  echo ' '  
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+

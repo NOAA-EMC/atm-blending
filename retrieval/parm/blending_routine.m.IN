@@ -253,15 +253,15 @@ netcdf.close(nc);
 %-------------------------------------------------------------------------
 % _fill_value
 fileattrib(ncfile,'+w');
-ncwriteatt(ncfile,'U2D','_FillValue', int32(9.969209968386869e+36));
-ncwriteatt(ncfile,'V2D','_FillValue', int32(9.969209968386869e+36));
-ncwriteatt(ncfile,'P','_FillValue', int32(9.969209968386869e+36));
-ncwriteatt(ncfile,'T2D','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'Q2D','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'RAINRATE','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'PSFC','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'LWDOWN','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'SWDOWN','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'U2D','_FillValue', single(9.969209968386869e+36));
+ncwriteatt(ncfile,'V2D','_FillValue', single(9.969209968386869e+36));
+ncwriteatt(ncfile,'P','_FillValue', single(9.969209968386869e+36));
+ncwriteatt(ncfile,'T2D','FillValue', single(1e+21));
+ncwriteatt(ncfile,'Q2D','FillValue', single(1e+21));
+ncwriteatt(ncfile,'RAINRATE','FillValue', single(1e+21));
+ncwriteatt(ncfile,'PSFC','FillValue', single(1e+21));
+ncwriteatt(ncfile,'LWDOWN','FillValue', single(1e+21));
+ncwriteatt(ncfile,'SWDOWN','FillValue', single(1e+21));
 end
 end
 %-------------------------------------------------------------------------

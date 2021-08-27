@@ -95,6 +95,7 @@ function edit_blending {
   EDATEHWRF="${HEYEAR}${HEMONTH}${HEDAY} ${HEHOUR}:00:00"
   sed -e "s/HFRC_BEG/$SDATEHWRF/g" \
       -e "s/HFRC_END/$EDATEHWRF/g" \
+      -e "s/UNSTR_MESH/$unstr_mesh/g" \
       -e "s/EVENT/$event/g" \
       -e "s/NLON/$nlon/g"\
       -e "s/NLAT/$nlat/g"
@@ -130,4 +131,13 @@ function edit_unstr_interp {
        -e "s/EVENT/$event/g" \
        -e "s/NLON/$nlon/g"\
        -e "s/NLAT/$nlat/g"
+}
+
+function edit_append_unstr {
+
+  SDATEATM="${SYEAR}-${SMONTH}-${SDAY}"
+  EDATEATM="${EYEAR}-${EMONTH}-${EDAY}"
+  sed  -e "s/FRC_BEG/$SDATEATM/g" \
+       -e "s/FRC_END/$EDATEATM/g" \
+       -e "s/UNSTR_MESH/$unstr_mesh/g"
 }

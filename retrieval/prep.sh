@@ -135,6 +135,9 @@ cd $HOME/obs
 cd $HOME
 edit_blending < parm/plotting_master_blend.m.IN > forcing/plotting_master_blend.m
 echo -e "\e[34mplotting_master_blend.m templates is filled\e[0m"
+edit_blending < parm/plotting_master_blend_unstr.m.IN > forcing/plotting_master_blend_unstr.m
+echo -e "\e[34mplotting_master_blend_unstr.m templates is filled\e[0m"
+
 #-----------------------------------------------------------------------------------#
 #                        13- interpolation fields                                   #
 #-----------------------------------------------------------------------------------#
@@ -143,3 +146,5 @@ cd $HOME
 cp $fix_mesh/$unstr_mesh forcing/
 edit_unstr_interp < parm/str_2_unstr_interp.m.IN > forcing/str_2_unstr_interp.m
 echo -e "\e[34mstr_2_unstr_interp.m templates is filled\e[0m"
+edit_append_unstr < parm/append_unstr_nc4.sh.IN > forcing/append_unstr_nc4.sh
+echo -e "\e[34mparm/append_unstr_nc4.sh.IN templates is filled\e[0m"

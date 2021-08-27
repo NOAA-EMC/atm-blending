@@ -9,7 +9,8 @@ t0=datenum('FRC_BEG','yyyymmdd HH:MM:SS');
 t1=datenum('FRC_END','yyyymmdd HH:MM:SS');
 unstr_mesh='UNSTR_MESH';
 plott=0;
- [tri,x,y,z] = readWW3mesh(unstr_mesh,plott);
+ [trii,x,y,z] = readWW3mesh(unstr_mesh,plott);
+ tri=flipud(rot90(trii));
 %-------------------------------------------------------------------------------------
 %variable names from original atm models
 vars={'longitude','latitude','P','PSFC','T2D','Q2D','U2D','V2D','RAINRATE','SWDOWN','LWDOWN'};
@@ -127,7 +128,7 @@ netcdf.putAtt(nc, v_varid, 'long_name', 'northward_wind');
 %-------------------------------------------------------------------------------------
 p_varid=netcdf.defVar(nc, 'P' ,'NC_FLOAT',[node, timet]);
 netcdf.putAtt(nc, p_varid, 'units', 'Pa');
-netcdf.putAtt(nc, p_varid, 'field', 'V, scalar, series');
+netcdf.putAtt(nc, p_varid, 'field', 'P, scalar, series');
 netcdf.putAtt(nc, p_varid, 'long_name', 'Pressure Reduced to MSL');
 %-------------------------------------------------------------------------------------
 netcdf.endDef(nc);
@@ -143,9 +144,9 @@ netcdf.close(nc);
 %-------------------------------------------------------------------------------------
 % _fill_values
 fileattrib(ncfile,'+w');
-ncwriteatt(ncfile,'uwnd','_FillValue', 9.969209968386869e+36);
-ncwriteatt(ncfile,'vwnd','_FillValue', 9.969209968386869e+36);
-ncwriteatt(ncfile,'P','_FillValue', 9.969209968386869e+36);
+ncwriteatt(ncfile,'uwnd','_FillValue', single(99999));
+ncwriteatt(ncfile,'vwnd','_FillValue', single(99999));
+ncwriteatt(ncfile,'P','_FillValue', single(99999));
 %-------------------------------------------------------------------------------------
 end
 end

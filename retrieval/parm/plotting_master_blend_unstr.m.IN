@@ -1,0 +1,77 @@
+clear all
+%-------------------------------------------------------------------------
+% Ali Abdolali (ali.abdolali@noaa.gov)
+%-------------------------------------------------------------------------
+addpath('../../tools');
+
+%variable names from original atm models
+vars={'longitude','latitude','tri','P','uwnd','vwnd'};
+%variable units
+Units={'degree','degree', 'NA','Pa', 'm/s', 'm/s'};
+
+var={'longitude','latitude','tri','P','U10'};
+
+ncf='Master_blend_UNSTR_MESH.nc'
+if ~isfile(ncf)
+display([ncf,' does not exist'])
+else
+   final.time=convert_time(ncf,'time');
+   final.U2D=ncread(ncf,'uwnd');
+   final.V2D=ncread(ncf,'vwnd');
+   final.U10=sqrt(final.U2D.^2+final.V2D.^2);
+   final.P=ncread(ncf,'P');
+   final.longitude=ncread(ncf,'longitude');
+   final.latitude=ncread(ncf,'latitude');
+   final.tri=flipud(rot90(ncread(ncf,'tri')));
+
+  legendvar={'longitude','latitude','NA','PRESSURE at mean sea level','U_{10}'};
+  Unit={'degree','degree', 'NA', 'Pa', 'm/s'};
+  % define caxis limit
+    ca=[-134 -50.025; % longitude
+        5 57.485;     % latitude
+        nan nan;      %tri 
+        99500 103500; % pressure at MSL
+        0 40];         % U10
+    %load coastline for continent boundaries
+    load coast
+
+%-------------------------------------------------------------------------     
+    width=1100;  % Width of figure for movie [pixels]
+    height=900;  % Height of figure of movie [pixels]
+    left=700;     % Left margin between figure and screen edge [pixels]
+    bottom=200;  % Bottom margin between figure and screen edge [pixels]
+  for n=4:5
+    close all
+    field=final.(sprintf(var{n}));
+
+    vidObj = VideoWriter([var{n},'UNSTR_MESH']);  % Set filename to write video file
+    vidObj.FrameRate=10;  % Define the playback framerate [frames/sec]
+    open(vidObj);
+    figure
+    set(gcf,'Position', [left bottom width height])
+%-------------------------------------------------------------------------     
+      for i=1:length(final.time)
+        clf
+        trisurf(final.tri,final.longitude,final.latitude,field(:,i));
+        view(2)
+        shading interp;
+        hold on
+        plot(long,lat','k');
+        title(['Blended - ',legendvar{n},' - ',datestr(final.time(i))],'FontSize',12);
+        h=colorbar
+        ylabel(h, ['(',Unit{n},')'],'FontSize',10);
+        colormap(jet)
+        caxis([ca(n,1) ca(n,2)]);
+        xlim([min(final.longitude)-1 max(final.longitude)+1])
+        ylim([min(final.latitude)-1 max(final.latitude)+1])
+        axis on
+        box on
+        xlabel('Longitude','FontSize',12)
+        ylabel('Latitude','FontSize',12)
+
+        currFrame = getframe(gcf);
+        writeVideo(vidObj,currFrame);  % Get each recorded frame and write it to filename defined above
+      end
+    close(vidObj);
+  end
+end    

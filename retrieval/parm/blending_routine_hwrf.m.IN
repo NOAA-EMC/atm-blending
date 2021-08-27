@@ -208,18 +208,16 @@ netcdf.close(nc);
 %-------------------------------------------------------------------------
 % _fill_value
 fileattrib(ncfile,'+w');
-ncwriteatt(ncfile,'UGRD_10maboveground','_FillValue', int32(9.969209968386869e+36));
-ncwriteatt(ncfile,'VGRD_10maboveground','_FillValue', int32(9.969209968386869e+36));
-ncwriteatt(ncfile,'PRMSL_meansealevel','_FillValue', int32(9.969209968386869e+36));
-ncwriteatt(ncfile,'TMP_2maboveground','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'SPFH_2maboveground','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'PRATE_surface','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'PRES_surface','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'DLWRF_surface','FillValue', int32(1e+21));
-ncwriteatt(ncfile,'DSWRF_surface','FillValue', int32(1e+21));
+ncwriteatt(ncfile,'UGRD_10maboveground','_FillValue', single(9.969209968386869e+36));
+ncwriteatt(ncfile,'VGRD_10maboveground','_FillValue', single(9.969209968386869e+36));
+ncwriteatt(ncfile,'PRMSL_meansealevel','_FillValue', single(9.969209968386869e+36));
+ncwriteatt(ncfile,'TMP_2maboveground','FillValue', single(1e+21));
+ncwriteatt(ncfile,'SPFH_2maboveground','FillValue', single(1e+21));
+ncwriteatt(ncfile,'PRATE_surface','FillValue', single(1e+21));
+ncwriteatt(ncfile,'PRES_surface','FillValue', single(1e+21));
+ncwriteatt(ncfile,'DLWRF_surface','FillValue', single(1e+21));
+ncwriteatt(ncfile,'DSWRF_surface','FillValue', single(1e+21));
 end
 end
-%-------------------------------------------------------------------------
-% Read atm models
 %-------------------------------------------------------------------------
 %[hwrf]=read_hwrf('hwrf',YYYY,MM,DD,HH,var,nx,ny)
