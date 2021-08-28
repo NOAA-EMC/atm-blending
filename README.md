@@ -1,6 +1,8 @@
 # atm-blending
 Atmospheric blending for COASTAL Act application
 
+![Detailed_CA_Workflow_AA](https://user-images.githubusercontent.com/37336972/131204897-d1dcc193-313d-4591-8288-65473263e514.png)
+
 Users who only need to check out the latest code or certain tags can clone the repository without having a GitHub account:   
 `git clone https://github.com/NOAA-EMC/atm-blending.git`   
 or with GitHub account   
