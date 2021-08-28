@@ -100,12 +100,17 @@ This program fills the templates templates:
  `forcing/retrieve_buoy.sh`      
 - Satellite Altimeters (login node):      
  `forcing/retrieve_sat_alt.sh`      
-### 3- Statistical Analysis and recipe preparation.     
+### 3- Statistical Analysis and recipe preparation.   
+
 ![stat](https://user-images.githubusercontent.com/37336972/131204538-ec5bc597-4510-48ff-8452-030b0f5f42e6.png)
 
 - Recipe preparation based models' output comparison with observations (RMSE) within impacted area (computational node):        
  `forcing/recipe_prep.m`    
- This script generates `Statiscital_Anaylsis.log` and `recipe`.      
+ This script generates `Statiscital_Anaylsis.log` and `recipe`.     
+
+![Statiscital_Anaylsis_recipe](https://user-images.githubusercontent.com/37336972/131205620-41e8ac86-e6f5-4a85-8564-ff28ac97654f.png)
+
+
 ### 4- Master Blend Preparation.      
 - Blending model outputs based on the `recipe` (computational node):    
  `forcing/blending_routine.m`      
