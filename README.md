@@ -8,7 +8,7 @@ or with GitHub account
 `cd atm-blending`      
       
 
-## Fill the templates and retrieve the forcings from hpss from operation RAP, GFS, HRRR and COASTAL Act HWRF 
+### 0- Fill the templates and retrieve the forcings from hpss from operation RAP, GFS, HRRR and COASTAL Act HWRF 
 cd retrieval   
 ### modify _input_var.sh_
 add the path on HPSS for GFS, RAP and HRRR:   
@@ -83,7 +83,9 @@ This program fills the templates templates:
  `forcing/retrieve_buoy.sh`      
 - Satellite Altimeters (login node):      
  `forcing/retrieve_sat_alt.sh`      
-### 3- Statistical Analysis and recipe preparation.         
+### 3- Statistical Analysis and recipe preparation.     
+![stat](https://user-images.githubusercontent.com/37336972/131204538-ec5bc597-4510-48ff-8452-030b0f5f42e6.png)
+
 - Recipe preparation based models' output comparison with observations (RMSE) within impacted area (computational node):        
  `forcing/recipe_prep.m`    
  This script generates `Statiscital_Anaylsis.log` and `recipe`.      
