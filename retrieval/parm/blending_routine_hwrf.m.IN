@@ -22,7 +22,6 @@ t1=datenum('HFRC_END','yyyymmdd HH:MM:SS');
 time=t0:1/24:t1;
 
 %-------------------------------------------------------------------------     
-% read recipe line by line and generate the master blend
 for m=1:length(time)
 
 YYYY= str2num(datestr(time(m),'yyyy'));
