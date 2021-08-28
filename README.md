@@ -80,6 +80,21 @@ This program fills the templates templates:
  `forcing/rap_grib2_to_nc4.sh` (optional)    
 - Integrate HWRF outputs (native grids: core, storm, synoptic) with cycle2cycle smoothing (computational node):       
  `forcing/blending_routine_hwrf.m`      
+ 
+ | Variable Name (Standard) | Variable Name (Master Blend) | Long Name | Unit |
+| :------------- | :-----------------------------| :------------------------- | :------------|
+| UGRD_10maboveground | U2D | U-Component of Wind 10 m above ground | _m/s_ |
+| VGRD_10maboveground | V2D | V-Component of Wind 10 m above ground | _m/s_ |
+| PRES_surface | PSFC | Surface Pressure | _Pa_ |
+| PRMSL_meansealevel | P | Pressure Reduced to MSL | _Pa_ |
+| TMP_2maboveground | T2D | Temperature 2 m above ground | _K_ |
+| SPFH_2maboveground | Q2D | Specific Humidity 2 m above ground | _kg/kg_ |
+| PRATE_surface | RAINRATE | Precipitation Rate at surface | _kg/m^2/s_ |
+| DSWRF_surface | DSWRF | Downward Short-Wave Radiation Flux at surface | _W/m^2_ |
+| DLWRF_surface | DLWRF | Downward Long-Wave Radiation Flux at surface | _W/m^2_ |
+
+
+
 ### 2- Observaton Data Retrieval.      
 - Buoy (login node):       
  `forcing/retrieve_buoy.sh`      
