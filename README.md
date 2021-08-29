@@ -1,7 +1,8 @@
 # atm-blending
-Atmospheric blending for COASTAL Act application
+## Atmospheric blending for COASTAL Act application
 
 ![Detailed_CA_Workflow_AA](https://user-images.githubusercontent.com/37336972/131204897-d1dcc193-313d-4591-8288-65473263e514.png)
+**Figure 1: atm-blending workflow**
 
 Users who only need to check out the latest code or certain tags can clone the repository without having a GitHub account:   
 `git clone https://github.com/NOAA-EMC/atm-blending.git`   
@@ -44,12 +45,17 @@ This program fills the templates templates:
    NDBC:     
    It is taken from [NDBC](https://dods.ndbc.noaa.gov/) and avialable locally in _NDBCfiles_.     
    Satellite ([coastwatch](https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html)):     
-   - Jason-3: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3    
-   - Sentinel-3A: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3a     
-   - Sentinel-3B: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b    
-   - CryoSat-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/c2     
-   - SARAL: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa     
-   - Jason-2: ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2 (available through 1 Oct. 2019).     
+   
+    **Table 1: Satellite Altimeters**
+ 
+   | Satellite | ftp source |
+   | :------------- | :-----------------------------| 
+   | Jason-3 | ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j3 |     
+   | Sentinel-3A | ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3a |      
+   | Sentinel-3B | ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/3b |     
+   | CryoSat-2 | ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/c2 |     
+   | SARAL | ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/sa |     
+   | Jason-2 | ftp://ftpcoastwatch.noaa.gov/pub/socd/lsa/johnk/coastwatch/j2 (available through 1 Oct. 2019). |      
            
 - Blending and recipe scripts:
    - hwrf model integration: `forcing/blending_routine_hwrf.m`    
@@ -81,6 +87,8 @@ This program fills the templates templates:
 - Integrate HWRF outputs (native grids: core, storm, synoptic) with cycle2cycle smoothing (computational node):       
  `forcing/blending_routine_hwrf.m`      
  
+ **Table 2: Forcing Variables**
+ 
  | Variable Name (Standard) | Variable Name (Master Blend) | Long Name | Unit |
 | :------------- | :-----------------------------| :------------------------- | :------------|
 | UGRD_10maboveground | U2D | U-Component of Wind 10 m above ground | _m/s_ |
@@ -103,13 +111,17 @@ This program fills the templates templates:
 ### 3- Statistical Analysis and recipe preparation.   
 
 ![stat](https://user-images.githubusercontent.com/37336972/131204538-ec5bc597-4510-48ff-8452-030b0f5f42e6.png)
+**Figure 2: Model and Buoy/Satellite Altimeter data comparision in the master blend domain (GLobal) and impacted area (Regiona) in terms of RMSE.**
+
+![model_performance](https://user-images.githubusercontent.com/37336972/131237669-2c8ba6cc-e187-44e5-b2ef-182f0aec2e3c.png)
+**Figure 3: Time series of atmospheric models' performances (gfs, hrrr, rap, hwrf).**
 
 - Recipe preparation based models' output comparison with observations (RMSE) within impacted area (computational node):        
  `forcing/recipe_prep.m`    
  This script generates `Statiscital_Anaylsis.log` and `recipe`.     
 
 ![Statiscital_Anaylsis_recipe](https://user-images.githubusercontent.com/37336972/131205620-41e8ac86-e6f5-4a85-8564-ff28ac97654f.png)
-
+**Figure 4: Statiscital_Anaylsis.log and recipe.**
 
 ### 4- Master Blend Preparation.      
 - Blending model outputs based on the `recipe` (computational node):    
