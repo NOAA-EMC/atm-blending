@@ -43,7 +43,7 @@ This program fills the templates templates:
 - Atmospheric model interpolation to master blend domain and grib2 to NetCDF format conversion.    
 - Observation data retrieval:    
    NDBC:     
-   It is taken from [NDBC](https://dods.ndbc.noaa.gov/) and avialable locally in _NDBCfiles_.     
+   It is taken from [NDBC](https://dods.ndbc.noaa.gov/) and available locally in _NDBCfiles_.     
    Satellite ([coastwatch](https://coastwatch.noaa.gov/cw/satellite-data-products/sea-surface-height/along-track.html)):     
    
     **Table 1: Satellite Altimeters**
@@ -111,7 +111,7 @@ This program fills the templates templates:
 ### 3- Statistical Analysis and recipe preparation.   
 
 ![stat](https://user-images.githubusercontent.com/37336972/131204538-ec5bc597-4510-48ff-8452-030b0f5f42e6.png)
-**Figure 2: Model and Buoy/Satellite Altimeter data comparision in the master blend domain (GLobal) and impacted area (Regiona) in terms of RMSE.**
+**Figure 2: Model and Buoy/Satellite Altimeter data comparison in the master blend domain (Global) and impacted area (Regional) in terms of RMSE.**
 
 ![model_performance](https://user-images.githubusercontent.com/37336972/131237669-2c8ba6cc-e187-44e5-b2ef-182f0aec2e3c.png)
 **Figure 3: Time series of atmospheric models' performances (gfs, hrrr, rap, hwrf).**
@@ -127,7 +127,7 @@ This program fills the templates templates:
 - Blending model outputs based on the `recipe` (computational node):    
  `forcing/blending_routine.m`      
 ### 5- Interpolation on Downstream models' domain.      
-- Interpolation on the trinagular unstructured mesh- hourly (computational node):      
+- Interpolation on the triangular unstructured mesh- hourly (computational node):      
  `forcing/str_2_unstr_interp.m`      
  - Append hourly atmospheric foricng including wind speed at 10 m and pressure at MSL into one single netcdf file (computational node):      
  `forcing/append_unstr_nc4.sh`      
