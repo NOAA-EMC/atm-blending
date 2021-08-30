@@ -103,7 +103,7 @@ This program fills the templates templates:
 
 
 
-### 2- Observaton Data Retrieval.      
+### 2- Observation Data Retrieval.      
 - Buoy (login node):       
  `forcing/retrieve_buoy.sh`      
 - Satellite Altimeters (login node):      
