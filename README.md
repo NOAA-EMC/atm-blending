@@ -143,4 +143,4 @@ This program fills the templates templates:
  
  
  
- developers: Ali Abdolali (ali.abdolali@noaa.gov)
+ developer: Ali Abdolali (ali.abdolali@noaa.gov)
