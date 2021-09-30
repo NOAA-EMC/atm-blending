@@ -13,7 +13,7 @@ or with GitHub account
 
 ### 0- Fill the templates and retrieve the forcings from hpss from operation RAP, GFS, HRRR and COASTAL Act HWRF 
 cd retrieval   
-### modify _input_var.sh_
+### modify _input_var.sh_      
 add the path on HPSS for GFS, RAP and HRRR:   
 `FILEGFS=<path on hpss to GFS tar files>`   
 `atmosGFS=<path on hpss to GFS tar files>`   
@@ -35,6 +35,9 @@ aadd the path on HPSS HWRF
 Add the master blend domain corner (_lon_min_ and _lat_min_),  dimension (_nlon_ and _nlat_) and spatial resolution (_dlon_ and _dlat_).     
 Define the path to NDBC observations and define the regional domain coverage (_lon_w_, _lon_e_ and _lat_s_, _lat_n_).     
      
+* The _input_var.sh_ files are avaiable for the following storms:     
+> _input_var_florence.sh_       
+> _input_var_ida.sh_       
 
  execute   
 `bash prep.sh`   
