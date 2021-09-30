@@ -12,7 +12,8 @@ or with GitHub account
       
 
 ### 0- Fill the templates and retrieve the forcings from hpss from operation RAP, GFS, HRRR and COASTAL Act HWRF 
-cd retrieval   
+`cd retrieval`   
+`cp input_var_template.sh input_var.sh`   
 ### modify _input_var.sh_      
 add the path on HPSS for GFS, RAP and HRRR:   
 `FILEGFS=<path on hpss to GFS tar files>`   
