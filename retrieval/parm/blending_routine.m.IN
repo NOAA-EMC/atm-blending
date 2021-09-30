@@ -149,8 +149,8 @@ source='EVENT';
 nlon=nx;
 nlat=ny;
 nt=1;
-%convert original time to days since 1990-01-01 00:00:00
-t(:,1)=final.time-726834;
+%convert original time to seconds since HFRC_BEG (yyyy-mm-dd HH:MM:SS)
+t(:,1)=(final.time-t0)*24*3600;
 nc = netcdf.create(ncfile, '64BIT_OFFSET');
 netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'start_date',datestr(final.time))
 netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'stop_date',datestr(final.time))
@@ -184,7 +184,7 @@ netcdf.putAtt(nc, lat_varid, 'field', 'lat, scalar, series');
 % time
 time_varid = netcdf.defVar(nc, 'time', 'double', [timet]);
 netcdf.putAtt(nc, time_varid, 'long_name', 'julian day (UT)');
-netcdf.putAtt(nc, time_varid, 'units', 'days since 1990-01-01 00:00:00');
+netcdf.putAtt(nc, time_varid, 'units', 'seconds since NC_T0');
 netcdf.putAtt(nc, time_varid, 'field', 'time, scalar, series');
 netcdf.putAtt(nc, time_varid, 'conventions', 'relative julian days with decimal part (as parts of the day )');
 netcdf.putAtt(nc, time_varid, 'axis', 'T');

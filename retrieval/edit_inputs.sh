@@ -66,8 +66,10 @@ function edit_forcing_hwrf {
 
   SDATEATM="${HSYEAR}-${HSMONTH}-${HSDAY}T${HSHOUR}:00:00"
   EDATEATM="${HEYEAR}-${HEMONTH}-${HEDAY}T${HEHOUR}:00:00"
+  T0="${HSYEAR}-${HSMONTH}-${HSDAY} ${HSHOUR}:00:00"
   sed  -e "s/HFRC_BEG/$SDATEATM/g" \
        -e "s/HFRC_END/$EDATEATM/g" \
+       -e "s/NC_T0/$T0/g" \
        -e "s/NETCDF_SWITCH/$NETCDF_SWITCH/g" \
        -e "s/NETCDF_COMP/$NETCDF_COMP/g" \
        -e "s/LON_MIN/$lon_min/g" \
@@ -93,8 +95,11 @@ function edit_blending {
 
   SDATEHWRF="${HSYEAR}${HSMONTH}${HSDAY} ${HSHOUR}:00:00"  
   EDATEHWRF="${HEYEAR}${HEMONTH}${HEDAY} ${HEHOUR}:00:00"
+  T0="${HSYEAR}-${HSMONTH}-${HSDAY} ${HSHOUR}:00:00"
   sed -e "s/HFRC_BEG/$SDATEHWRF/g" \
       -e "s/HFRC_END/$EDATEHWRF/g" \
+      -e "s/HWRF_DT/$HWRF_DT/g" \
+      -e "s/NC_T0/$T0/g" \
       -e "s/UNSTR_MESH/$unstr_mesh/g" \
       -e "s/EVENT/$event/g" \
       -e "s/NLON/$nlon/g"\

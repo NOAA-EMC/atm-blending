@@ -45,24 +45,11 @@ DT=DELTAT;
 %-------------------------------------------------------------------------------------
 % Analysis and write the recipe based on Ascending RMSE
 %-------------------------------------------------------------------------------------
-% hwrf
+% hrrr
 j=1;
 % satellite
-model{j}='hwrf';
-[N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
-    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
-    hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
-    lon_e,lat_s,lat_n,DT,plott);
-% buoy
-[N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
-    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
-    var_buoy_v,hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
-    lon_w,lon_e,lat_s,lat_n,DT,plott);
-%-------------------------------------------------------------------------------------
-% hrrr
-j=2;
-% satellite
-model{2}='hrrr';
+model{j}='hrrr';
+if isfile(hrrr_nc)
 [N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
     satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
     hrrr_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
@@ -72,25 +59,15 @@ model{2}='hrrr';
     buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
     var_buoy_v,hrrr_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
     lon_w,lon_e,lat_s,lat_n,DT,plott);
-%-------------------------------------------------------------------------------------
-% gfs
-j=3;
-% satellite
-model{3}='gfs';
-[N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
-    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
-    gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
-    lon_e,lat_s,lat_n,DT,plott);
-% buoy
-[N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
-    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
-    var_buoy_v,gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
-    lon_w,lon_e,lat_s,lat_n,DT,plott);
+else
+disp([hrrr_nc,' does not exist']);
+end
 %-------------------------------------------------------------------------------------
 % rap
-j=4;
+j=2;
 % satellite
-model{4}='rap';
+model{2}='rap';
+if isfile(rap_nc)
 [N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
     satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
     rap_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
@@ -100,6 +77,45 @@ model{4}='rap';
     buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
     var_buoy_v,rap_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
     lon_w,lon_e,lat_s,lat_n,DT,plott);
+else
+disp([rap_nc,' does not exist']);
+end
+%-------------------------------------------------------------------------------------
+% hwrf
+j=3;
+% satellite
+model{3}='hwrf';
+if isfile(hwrf_nc)
+[N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
+    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
+    hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
+    lon_e,lat_s,lat_n,DT,plott);
+% buoy
+[N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
+    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
+    var_buoy_v,hwrf_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
+    lon_w,lon_e,lat_s,lat_n,DT,plott);
+else
+disp([hwrf_nc,' does not exist']);
+end
+%-------------------------------------------------------------------------------------
+% gfs
+j=4;
+% satellite
+model{4}='gfs';
+if isfile(gfs_nc)
+[N_GLOBAL_SAT(i,j),ERR_GLOBAL_SAT(i,j),N_REGIONAL_SAT(i,j),ERR_REGIONAL_SAT(i,j)] = ...
+    satellite_wind_error(sat_netcdf,var_sat_lon,var_sat_lat,var_sat_time,var_sat_v,...
+    gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,lon_w,...
+    lon_e,lat_s,lat_n,DT,plott);
+% buoy
+[N_GLOBAL_BUOY(i,j),ERR_GLOBAL_BUOY(i,j),N_REGIONAL_BUOY(i,j),ERR_REGIONAL_BUOY(i,j)] = ...
+    buoy_wind_error(buoy_netcdf,var_buoy_name,var_buoy_lon,var_buoy_lat,var_buoy_time,...
+    var_buoy_v,gfs_nc,var_model_lon,var_model_lat,var_model_time,var_model_u,var_model_v,...
+    lon_w,lon_e,lat_s,lat_n,DT,plott);
+else
+disp([gfs_nc,' does not exist']);
+end
 %-------------------------------------------------------------------------------------
 % if there is no observation within global/regional domain, set it to 0
 ERR_REGIONAL_SAT(isnan(ERR_REGIONAL_SAT))=0;
@@ -136,7 +152,7 @@ if i==1
 fileID = fopen('Statiscital_Anaylsis.log','w');
 fprintf(fileID,'%s %3.3f %s %3.3f  %s %3.3f  %s %3.3f\n','lon_min',lon_w,'lon_max',lon_e,'lan_min',lat_s,'lat_max',lat_n);
 fprintf(fileID,'%s\n','-------------------------------------------------------------------------------------------------------------------------');
-fprintf(fileID,'%s\n','|      Date     |           hwrf          |           hrrr          |           gfs           |           rap           ');
+fprintf(fileID,'%s\n','|      Date     |           hrrr          |           rap           |           hwrf           |           gfs           ');
 fprintf(fileID,'%s\n','-------------------------------------------------------------------------------------------------------------------------');
 fprintf(fileID,'%s\n','|               |   Global   |  Regional  |   Global   |  Regional  |   Global   |  Regional  |   Global   |  Regional  |');
 fprintf(fileID,'%s\n','-------------------------------------------------------------------------------------------------------------------------');
@@ -167,7 +183,7 @@ figure
     plot(time(1:i),ERR_GLOBAL_TOT(:,3),'-k','linewidth',2);
     hold on
     plot(time(1:i),ERR_GLOBAL_TOT(:,4),'-m','linewidth',2);
-    legend('hwrf','hrrr','gfs','rap');
+    legend('hrrr','rap','hwrf','gfs');
     set(gca,'xtick',[t0:1/2:t1],'xticklabel',datestr([t0:1/2:t1],'mmm dd HH'))
     xtickangle(90)
 title('Global Skill (RMSE)', 'Fontsize',14);

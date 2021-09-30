@@ -13,8 +13,8 @@ export MAINDIR="${MAIN}"
 #Operational HRRR, RAP, GFS
 ###############################################################################
 #Start and End date for operational products
-STARTDATE=<"yyyy-mm-ddTHH:MM:SS"> # FILL
-ENDDATE=<"yyyy-mm-ddTHH:MM:SS"> #FILL
+STARTDATE="2018-09-01T12:00:00"
+ENDDATE="2018-09-17T00:00:00"
 startd=$(date -d $STARTDATE +%s)
 endd=$(date -d $ENDDATE +%s)
 export SYEAR=$(date -d @$startd '+%Y')
@@ -28,28 +28,28 @@ export EHOUR=$(date -d @$endd '+%2H')
 ###############################################################################
 #GFS
 #HPSS path
-FILEGFS=<'\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/com_gfs_prod_gfs.\$\{YY\}\$\{MM\}\$\{DD\}_\$\{HH\}.gfs_pgrb2.tar'> # MODIFY (The archive format changes year to year)
+FILEGFS='\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/gpfs_hps_nco_ops_com_gfs_prod_gfs.\$\{YY\}\$\{MM\}\$\{DD\}\$\{HH\}.pgrb2_0p25.tar'
 #name of files in the tar file
-atmosGFS=<'.\/gfs.\$\{YY\}\$\{MM\}\$\{DD\}\/\$\{HH\}\/atmos\/gfs.t\$\{HH\}z.pgrb2.0p25.f00'> # MODIFY (The archive format changes year to year)
+atmosGFS='.\/gfs.t\$\{HH\}z.pgrb2.0p25.f00'
 ###############################################################################
 #HRRR
 #HPSS path
-FILEHRRR=<'\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/com_hrrr_prod_hrrr.\$\{YY\}\$\{MM\}\$\{DD\}'> # MODIFY (The archive format changes year to year)
+FILEHRRR='\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/gpfs_hps_nco_ops_com_hrrr_prod_hrrr.\$\{YY\}\$\{MM\}\$\{DD\}'
 ###############################################################################
 #RAP
 #HPSS path
-FILERAP=<'\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/com_rap_prod_rap.\$\{YY\}\$\{MM\}\$\{DD\}'> # MODIFY (The archive format changes year to year)
+FILERAP='\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/gpfs_hps_nco_ops_com_rap_prod_rap.\$\{YY\}\$\{MM\}\$\{DD\}'
 ###############################################################################
 #HWRF
 #event
-export event=<ida09l> # MODIFY (take the name from https://www.nhc.noaa.gov/gis/archive_besttrack.php?year=2021)
+export event=florence06l
 #HPSS path
-export HWRFsource=</NCEPPROD/2year/hpssprod/runhistory/rh2021/hwrf/09l> MODIFY
+export HWRFsource=/NCEPDEV/emc-hwrf/5year/Zaizhong.Ma/coastal/hiresmasks/florence_2018/expens_florence
 #Start and End date
-HWRF_STARTDATE=<"yyyy-mm-ddTHH:MM:SS"> # FILL
-HWRF_ENDDATE=<"yyyy-mm-ddTHH:MM:SS"> # FILL
+HWRF_STARTDATE="2018-09-01T12:00:00"
+HWRF_ENDDATE="2018-09-17T00:00:00"
 # HWRf time interval [hr]
-HWRF_DT=3; 
+HWRF_DT=1;
 starth=$(date -d $HWRF_STARTDATE +%s)
 endh=$(date -d $HWRF_ENDDATE +%s)
 export HSYEAR=$(date -d @$starth '+%Y')
@@ -61,26 +61,26 @@ export HEMONTH=$(date -d @$endh '+%m')
 export HEDAY=$(date -d @$endh '+%d')
 export HEHOUR=$(date -d @$endh '+%2H')
 ###############################################################################
-#interpolation (master blend coverage)
-lon_min=<'226.0'> # FILL
-nlon=<'5600'> # FILL
-dlon=<'0.015'> # FILL 
-lat_min=<'5.0'> # FILL
-nlat=<'3700'> # FILL
-dlat=<'0.015'> # FILL
+#interpolation
+lon_min='226.0'
+nlon='5600'
+dlon='0.015' 
+lat_min='5.0'
+nlat='3700'
+dlat='0.015'
 #compression precision
 dp='3'
 ##############################################################################
 # observation
 #NDBC
-export NDBCfiles=</scratch2/COASTAL/coastal/save/NDBC> # FILL
-#statistical anaysis (impact area coverage)
-lon_w=<'265.0'> # FILL
-lon_e=<'275.0'> # FILL
-lat_s=<'20.0'> # FILL
-lat_n=<'30.0'> # FILL
-DELTAT=<'1.0'> # FILL
+export NDBCfiles=/scratch2/COASTAL/coastal/save/NDBC
+#statistical anaysis
+lon_w='278.0'
+lon_e='288.0'
+lat_s='27.0'
+lat_n='37.0'
+DELTAT='1.0'
 ##############################################################################
 # unstructured meshes
-export fix_mesh=</scratch2/COASTAL/coastal/save/fix_WW3_Optimization/Meshes> # FILL
-export unstr_mesh=<EC_120m.msh> # FILL
+export fix_mesh=/scratch2/COASTAL/coastal/save/fix_WW3_Optimization/Meshes
+export unstr_mesh=EC_120m.msh

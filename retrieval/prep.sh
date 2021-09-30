@@ -86,26 +86,26 @@ echo -e "\e[34msmooth_fields.sh templates is filled\e[0m"
 #                          7- Forcing GFS (0.25 deg) Retrieval                      #
 #-----------------------------------------------------------------------------------#
 cd ${HOME}/forcing
-      bash retrieve_atm_gfs_hpss.sh
-      echo -e "\e[31mGFS ATM file is retrieved\e[0m"     
+#      bash retrieve_atm_gfs_hpss.sh
+#      echo -e "\e[31mGFS ATM file is retrieved\e[0m"     
 #-----------------------------------------------------------------------------------#
 #                          8- Forcing HRRR (3 km) Retrieval                         #
 #-----------------------------------------------------------------------------------#
 cd ${HOME}/forcing
-      bash retrieve_atm_hrrr_hpss.sh
-      echo -e "\e[31mHRRR ATM file is retrieved\e[0m"     
+#      bash retrieve_atm_hrrr_hpss.sh
+#      echo -e "\e[31mHRRR ATM file is retrieved\e[0m"     
 #-----------------------------------------------------------------------------------#
 #                          9- Forcing RAP (13 km) Retrieval                         #
 #-----------------------------------------------------------------------------------#
 cd ${HOME}/forcing
-      bash retrieve_atm_rap_hpss.sh
-      echo -e "\e[31mRAP ATM file is retrieved\e[0m"     
+#      bash retrieve_atm_rap_hpss.sh
+#      echo -e "\e[31mRAP ATM file is retrieved\e[0m"     
 #-----------------------------------------------------------------------------------#
 #                         10- Forcing HWRF Retrieval                                #
 #-----------------------------------------------------------------------------------#
 cd ${HOME}/forcing
-      bash retrieve_atm_hwrf_hpss.sh
-      echo -e "\e[31mHWRF ATM file is retrieved\e[0m"     
+#      bash retrieve_atm_hwrf_hpss.sh
+#      echo -e "\e[31mHWRF ATM file is retrieved\e[0m"     
 #-----------------------------------------------------------------------------------#
 #                          11- observation                                          #
 #-----------------------------------------------------------------------------------#
