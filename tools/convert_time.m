@@ -22,6 +22,11 @@ dates     = [];
         timebase   = sscanf(timeunits,'%*s%*s%d%*c%d%*c%d'); % YYYY MM DD
          timeorigin = double(datenum(timebase(1),timebase(2),timebase(3)));
         dates      = times + timeorigin;
+    elseif strncmp(timeunits,'hours since',numel('hours since'))
+        timebase   = sscanf(timeunits,'%*s%*s%d%*c%d%*c%d'); % YYYY MM DD
+         timeorigin = double(datenum(timebase(1),timebase(2),timebase(3)));
+        dates      = double(times ./ 24.0 + timeorigin);
+
     elseif strncmp(timeunits,'seconds since',numel('seconds since'))
         timebase   = sscanf(timeunits,'%*s%*s%d%*c%d%*c%d'); % YYYY MM DD
         timeorigin = double(datenum(timebase(1),timebase(2),timebase(3)));

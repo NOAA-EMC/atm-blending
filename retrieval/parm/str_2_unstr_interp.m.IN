@@ -48,6 +48,10 @@ ncf=['Master_blend_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num
 if ~isfile(ncf)
 display([ncf,' does not exist'])
 else
+ncfile=['Master_blend_UNSTR_MESH_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc'];
+if isfile(ncfile)
+display([ncfile,' exists'])
+else
 % read u10, v10 and P from master blend
      master.longitude=ncread(ncf,'longitude');
      master.latitude=ncread(ncf,'latitude');
@@ -70,11 +74,11 @@ time(1,1)=master.time;
 datestr(master.time)
 %-------------------------------------------------------------------------------------
 % nc file preparation 
-ncfile=['Master_blend_UNSTR_MESH_',num2str(YYYY),num2str(MM,'%02d'),num2str(DD,'%02d'),'_',num2str(HH,'%02d'),'.nc'];
 source='EVENT';
 [nnode,nt] = size(UTT);
 [noell,eelem] = size(tri);
-t(:,1)=time-726834;
+%convert original time to seconds since NC_T0 (yyyy-mm-dd HH:MM:SS)
+t(:,1)=(time-t0)*24*3600;
 size(t);
 
 nc = netcdf.create(ncfile, '64BIT_OFFSET');
@@ -109,7 +113,7 @@ netcdf.putAtt(nc, lat_varid, 'field', 'lat, scalar, series');
 %-------------------------------------------------------------------------------------
 time_varid = netcdf.defVar(nc, 'time', 'double', timet);
 netcdf.putAtt(nc, time_varid, 'long_name', 'julian day (UT)');
-netcdf.putAtt(nc, time_varid, 'units', 'days since 1990-01-01 00:00:00');
+netcdf.putAtt(nc, time_varid, 'units', 'seconds since NC_T0');
 netcdf.putAtt(nc, time_varid, 'field', 'time, scalar, series');
 netcdf.putAtt(nc, time_varid, 'conventions', 'relative julian days with decimal part (as parts of the day )');
 netcdf.putAtt(nc, time_varid, 'axis', 'T');
@@ -148,5 +152,6 @@ ncwriteatt(ncfile,'uwnd','_FillValue', single(99999));
 ncwriteatt(ncfile,'vwnd','_FillValue', single(99999));
 ncwriteatt(ncfile,'P','_FillValue', single(99999));
 %-------------------------------------------------------------------------------------
+end
 end
 end

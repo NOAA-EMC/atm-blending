@@ -15,6 +15,7 @@ var={'longitude','latitude','PRMSL_meansealevel','PRES_surface',...
 %variable units
 Unit={'degree','degree', 'Pa', 'Pa', 'K', 'kg/kg', 'm/s', 'm/s', ...
     'kg/m^2/s', 'W/m^2', 'W/m^2'};
+t0=datenum('NC_T0','yyyy-mm-dd HH:MM:SS');
 %-------------------------------------------------------------------------     
 % Read master blend recipe
 fileID = fopen('recipe');
@@ -149,7 +150,7 @@ source='EVENT';
 nlon=nx;
 nlat=ny;
 nt=1;
-%convert original time to seconds since HFRC_BEG (yyyy-mm-dd HH:MM:SS)
+%convert original time to seconds since NC_T0 (yyyy-mm-dd HH:MM:SS)
 t(:,1)=(final.time-t0)*24*3600;
 nc = netcdf.create(ncfile, '64BIT_OFFSET');
 netcdf.putAtt(nc, netcdf.getConstant('NC_GLOBAL'), 'start_date',datestr(final.time))

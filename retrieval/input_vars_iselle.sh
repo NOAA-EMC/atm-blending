@@ -13,8 +13,8 @@ export MAINDIR="${MAIN}"
 #Operational HRRR, RAP, GFS
 ###############################################################################
 #Start and End date for operational products
-STARTDATE="2021-08-26T00:00:00"
-ENDDATE="2021-09-05T00:00:00"
+STARTDATE="2014-07-30T00:00:00"
+ENDDATE="2014-08-13T00:00:00"
 startd=$(date -d $STARTDATE +%s)
 endd=$(date -d $ENDDATE +%s)
 export SYEAR=$(date -d @$startd '+%Y')
@@ -28,9 +28,9 @@ export EHOUR=$(date -d @$endd '+%2H')
 ###############################################################################
 #GFS
 #HPSS path
-FILEGFS='\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/com_gfs_prod_gfs.\$\{YY\}\$\{MM\}\$\{DD\}_\$\{HH\}.gfs_pgrb2.tar'
+FILEGFS='\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\}\$\{MM\}\$\{DD\}\/com_gfs_prod_gfs.\$\{YY\}\$\{MM\}\$\{DD\}\$\{HH\}.pgrb2_0p25.tar'
 #name of files in the tar file
-atmosGFS='.\/gfs.\$\{YY\}\$\{MM\}\$\{DD\}\/\$\{HH\}\/atmos\/gfs.t\$\{HH\}z.pgrb2.0p25.f00'
+atmosGFS='.\/gfs.t\$\{HH\}z.pgrb2.0p25.f00'
 ###############################################################################
 #HRRR
 #HPSS path
@@ -42,15 +42,14 @@ FILERAP='\/NCEPPROD\/hpssprod\/runhistory\/rh\$\{YY\}\/\$\{YY\}\$\{MM\}\/\$\{YY\
 ###############################################################################
 #HWRF
 #event
-export event=ida09l
+export event=iselle09e
 #HPSS path
-#operational hwrf
-export HWRFsource=/NCEPPROD/2year/hpssprod/runhistory/rh2021/hwrf/09l
+export HWRFsource=/NCEPDEV/emc-hwrf/5year/Zaizhong.Ma/coastal/hiresmasks/iselle_2014/expens_iselle
 #Start and End date
-HWRF_STARTDATE="2021-08-27T00:00:00"
-HWRF_ENDDATE="2021-08-30T12:00:00"
+HWRF_STARTDATE="2014-07-31T18:00:00"
+HWRF_ENDDATE="2014-08-09T18:00:00"
 # HWRf time interval [hr]
-HWRF_DT=3; 
+HWRF_DT=1; 
 starth=$(date -d $HWRF_STARTDATE +%s)
 endh=$(date -d $HWRF_ENDDATE +%s)
 export HSYEAR=$(date -d @$starth '+%Y')
@@ -62,17 +61,17 @@ export HEMONTH=$(date -d @$endh '+%m')
 export HEDAY=$(date -d @$endh '+%d')
 export HEHOUR=$(date -d @$endh '+%2H')
 ###############################################################################
-export ATM1DEF=hrrr
-export ATM2DEF=rap
-export ATM3DEF=gfs
-export ATM4DEF=hwrf
+export ATM1DEF=hwrf
+export ATM2DEF=cfs
+export ATM3DEF=cfs
+export ATM4DEF=cfs
 ###############################################################################
-#interpolation
-lon_min='226.0'
-nlon='5600'
+#interpolation (master blend coverage)
+lon_min='97.0'
+nlon='12801'
 dlon='0.015' 
-lat_min='5.0'
-nlat='3700'
+lat_min='-34.0'
+nlat='6801'
 dlat='0.015'
 #compression precision
 dp='3'
@@ -80,13 +79,13 @@ dp='3'
 # observation
 #NDBC
 export NDBCfiles=/scratch2/COASTAL/coastal/save/NDBC
-#statistical anaysis
-lon_w='265.0'
-lon_e='275.0'
-lat_s='20.0'
-lat_n='30.0'
+#statistical anaysis (impact area coverage)
+lon_w='195.0'
+lon_e='20.0'
+lat_s='15.0'
+lat_n='25.0'
 DELTAT='1.0'
 ##############################################################################
 # unstructured meshes
 export fix_mesh=/scratch2/COASTAL/coastal/save/fix_WW3_Optimization/Meshes
-export unstr_mesh=EC_120m.msh
+export unstr_mesh=GESTOFS_Pacific_V2.msh

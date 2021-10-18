@@ -75,6 +75,8 @@ edit_blending < parm/blending_routine.m.IN > forcing/blending_routine.m
 echo -e "\e[34mblending_routine.m templates is filled\e[0m"
 edit_blending < parm/blending_routine_hwrf.m.IN > forcing/blending_routine_hwrf.m
 echo -e "\e[34mblending_routine_hwrf.m templates is filled\e[0m"
+edit_recipe < parm/recipe_prep_default.sh.IN > forcing/recipe_prep_default.sh
+echo -e "\e[34mrecipe_prep_default.sh templates is filled\e[0m"
 edit_recipe < parm/recipe_prep.m.IN > forcing/recipe_prep.m
 echo -e "\e[34mrecipe_prep.m templates is filled\e[0m"
 edit_smoothing < parm/smooth_fields.sh.IN > forcing/smooth_fields.sh
@@ -116,7 +118,7 @@ cd $HOME/obs
    then
        echo -e "\e[34msatellite_obs.nc file exists\e[0m"
     else
-       bash retrieve_sat_alt.sh
+#       bash retrieve_sat_alt.sh
        echo -e "\e[31mSatellite files are downloaded\e[0m"
    fi
 #-----------------------------------------------------------------------------------#
@@ -125,7 +127,7 @@ cd $HOME/obs
    then
        echo -e "\e[34mBUOY.nc file exists\e[0m"
     else
-       bash retrieve_buoy.sh
+#       bash retrieve_buoy.sh
        echo -e "\e[31mBuoy files are downloaded\e[0m"
    fi
 #-----------------------------------------------------------------------------------#

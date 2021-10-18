@@ -93,9 +93,9 @@ function edit_obs {
 
 function edit_blending {
 
-  SDATEHWRF="${HSYEAR}${HSMONTH}${HSDAY} ${HSHOUR}:00:00"  
-  EDATEHWRF="${HEYEAR}${HEMONTH}${HEDAY} ${HEHOUR}:00:00"
-  T0="${HSYEAR}-${HSMONTH}-${HSDAY} ${HSHOUR}:00:00"
+  SDATEHWRF="${SYEAR}${SMONTH}${SDAY} 00:00:00"  
+  EDATEHWRF="${EYEAR}${EMONTH}${EDAY} 00:00:00"
+  T0="${SYEAR}-${SMONTH}-${SDAY} 00:00:00"
   sed -e "s/HFRC_BEG/$SDATEHWRF/g" \
       -e "s/HFRC_END/$EDATEHWRF/g" \
       -e "s/HWRF_DT/$HWRF_DT/g" \
@@ -118,8 +118,16 @@ function edit_recipe {
 
   SDATEATM="${SYEAR}${SMONTH}${SDAY} ${SHOUR}:00:00"
   EDATEATM="${EYEAR}${EMONTH}${EDAY} ${EHOUR}:00:00"
+  SDATEREC="${SYEAR}-${SMONTH}-${SDAY}"
+  EDATEREC="${EYEAR}-${EMONTH}-${EDAY}"
   sed  -e "s/FRC_BEG/$SDATEATM/g" \
        -e "s/FRC_END/$EDATEATM/g" \
+       -e "s/REC_BEG/$SDATEREC/g" \
+       -e "s/REC_END/$EDATEREC/g" \
+       -e "s/atm1/$ATM1DEF/g" \
+       -e "s/atm2/$ATM2DEF/g" \
+       -e "s/atm3/$ATM3DEF/g" \
+       -e "s/atm4/$ATM4DEF/g" \
        -e "s/LONW/$lon_w/g" \
        -e "s/LONE/$lon_e/g" \
        -e "s/LATS/$lat_s/g" \
@@ -129,10 +137,12 @@ function edit_recipe {
 
 function edit_unstr_interp {
 
-  SDATEATM="${SYEAR}${SMONTH}${SDAY} ${SHOUR}:00:00"
-  EDATEATM="${EYEAR}${EMONTH}${EDAY} ${EHOUR}:00:00"
+  SDATEATM="${SYEAR}${SMONTH}${SDAY} 00:00:00"
+  EDATEATM="${EYEAR}${EMONTH}${EDAY} 00:00:00"
+  T0="${SYEAR}-${SMONTH}-${SDAY} 00:00:00"
   sed  -e "s/FRC_BEG/$SDATEATM/g" \
        -e "s/FRC_END/$EDATEATM/g" \
+       -e "s/NC_T0/$T0/g" \
        -e "s/UNSTR_MESH/$unstr_mesh/g" \
        -e "s/EVENT/$event/g" \
        -e "s/NLON/$nlon/g"\

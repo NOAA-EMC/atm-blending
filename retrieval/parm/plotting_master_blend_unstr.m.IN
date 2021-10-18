@@ -44,7 +44,7 @@ else
     close all
     field=final.(sprintf(var{n}));
 
-    vidObj = VideoWriter([var{n},'UNSTR_MESH']);  % Set filename to write video file
+    vidObj = VideoWriter([var{n},'_UNSTR_MESH']);  % Set filename to write video file
     vidObj.FrameRate=10;  % Define the playback framerate [frames/sec]
     open(vidObj);
     figure
