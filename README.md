@@ -13,8 +13,8 @@ or with GitHub account
 
 ### 0- Fill the templates and retrieve the forcings from hpss from operation RAP, GFS, HRRR and COASTAL Act HWRF 
 `cd retrieval`   
-`cp input_var_template.sh input_var.sh`   
-### modify _input_var.sh_      
+`cp input_var_template.sh input_vars.sh`   
+### modify _input_vars.sh_      
 add the path on HPSS for GFS, RAP and HRRR:   
 `FILEGFS=<path on hpss to GFS tar files>`   
 `atmosGFS=<path on hpss to GFS tar files>`   
@@ -33,12 +33,20 @@ aadd the path on HPSS HWRF
 `HWRF_STARTDATE="YYYY-MM-DDTHH:MM:SS"`   
 `HWRF_ENDDATE="YYYY-MM-DDTHH:MM:SS"`   
 
+The user can define a  preliminary  priority for the recipe and generate `forcing/recipe.def` for the period of `STARTDATE` and `ENDDATE`.    
+For example:     
+`ATM1DEF=hrrr`      
+`ATM2DEF=hwrf`      
+`ATM3DEF=rap`      
+`ATM4DEF=gfs`      
+
 Add the master blend domain corner (_lon_min_ and _lat_min_),  dimension (_nlon_ and _nlat_) and spatial resolution (_dlon_ and _dlat_).     
 Define the path to NDBC observations and define the regional domain coverage (_lon_w_, _lon_e_ and _lat_s_, _lat_n_).     
      
 * The _input_var.sh_ files are avaiable for the following storms:     
 > _input_var_florence.sh_       
-> _input_var_ida.sh_       
+> _input_var_ida.sh_    
+> _input_var_iselle.sh_       
 
  execute   
 `bash prep.sh`   
@@ -126,6 +134,12 @@ This program fills the templates templates:
 
 ![Statiscital_Anaylsis_recipe](https://user-images.githubusercontent.com/37336972/131205620-41e8ac86-e6f5-4a85-8564-ff28ac97654f.png)
 **Figure 4: Statiscital_Anaylsis.log and recipe.**
+
+### 3 (alternative)- default recipe preparation.     
+- Recipe preparation based on default priority (if statistical analysis is not performed/lack of observations).    
+`forcing/recipe_prep_default.sh`     
+This script generates the `forcing/recipe.def`.     
+`cp forcing/recipe.def forcing/recipe`     
 
 ### 4- Master Blend Preparation.      
 - Blending model outputs based on the `recipe` (computational node):    
