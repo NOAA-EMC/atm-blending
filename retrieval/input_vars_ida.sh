@@ -65,7 +65,7 @@ export HEHOUR=$(date -d @$endh '+%2H')
 export ATM1DEF=hrrr
 export ATM2DEF=rap
 export ATM3DEF=gfs
-export ATM4DEF=hwrf
+export ATM4DEF=gfs
 ###############################################################################
 #interpolation
 lon_min='226.0'
