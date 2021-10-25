@@ -83,8 +83,8 @@ export NDBCfiles=/scratch2/COASTAL/coastal/save/NDBC
 #statistical anaysis
 lon_w='265.0'
 lon_e='275.0'
-lat_s='20.0'
-lat_n='30.0'
+lat_s='22.0'
+lat_n='32.0'
 DELTAT='1.0'
 ##############################################################################
 # unstructured meshes

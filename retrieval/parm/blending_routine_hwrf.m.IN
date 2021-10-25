@@ -140,7 +140,7 @@ time_varid = netcdf.defVar(nc, 'time', 'double', [timet]);
 netcdf.putAtt(nc, time_varid, 'long_name', 'julian day (UT)');
 netcdf.putAtt(nc, time_varid, 'units', 'seconds since NC_T0');
 netcdf.putAtt(nc, time_varid, 'field', 'time, scalar, series');
-netcdf.putAtt(nc, time_varid, 'conventions', 'relative julian days with decimal part (as parts of the day )');
+netcdf.putAtt(nc, time_varid, 'base_date', 'NC_T0 UTC');
 netcdf.putAtt(nc, time_varid, 'axis', 'T');
 % UGRD
 u_varid=netcdf.defVar(nc, 'UGRD_10maboveground' ,'NC_FLOAT',[nnlon,nnlat,timet]);
